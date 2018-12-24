@@ -1,0 +1,16 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+
+group = 'com.geom'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+}
+
+
+dependencies {	
+	compile group: 'org.kynosarges', name: 'tektosyne', version: '6.2.0'
+}
