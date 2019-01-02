@@ -1,15 +1,31 @@
-apply plugin: 'java'
-apply plugin: 'eclipse'
+buildscript {
+    dependencies {
+        classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
+    }
 
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+plugins {
+    id "com.github.johnrengelman.shadow" version "2.0.3"
+}
+
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 group = 'com.geom'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = 1.8
+sourceCompatibility = 1.9
+targetCompatibility = 1.9
 
 repositories {
-	mavenCentral()
+    mavenLocal()
+    mavenCentral()
 }
-
 
 dependencies {	
 	compile group: 'org.kynosarges', name: 'tektosyne', version: '6.2.0'
