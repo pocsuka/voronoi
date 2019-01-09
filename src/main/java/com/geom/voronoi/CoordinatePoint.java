@@ -5,11 +5,11 @@ import org.kynosarges.tektosyne.geometry.PointD;
 import java.util.Locale;
 import java.util.Objects;
 
-// TODO check if MutablePoint must actually be mutable
-public class MutablePoint {
+// TODO check if CoordinatePoint must actually be mutable
+public class CoordinatePoint {
     private PointD point;
 
-    public MutablePoint(PointD point) {
+    public CoordinatePoint(PointD point) {
         this.point = point;
     }
 
@@ -17,15 +17,11 @@ public class MutablePoint {
         return point;
     }
 
-    void setPointD(PointD point) {
-        this.point = point;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MutablePoint that = (MutablePoint) o;
+        CoordinatePoint that = (CoordinatePoint) o;
         return Double.compare(that.getPointD().x, getPointD().x) == 0 &&
             Double.compare(that.getPointD().y, getPointD().y) == 0;
     }

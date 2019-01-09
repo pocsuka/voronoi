@@ -8,9 +8,9 @@ import java.util.Optional;
 public class LocationQueryMatch {
     PolygonLocation locationResult;
     Optional<DelaunayTriangle> triangle;
-    Optional<Pair<MutablePoint, MutablePoint>> edge;
+    Optional<Pair<CoordinatePoint, CoordinatePoint>> edge;
 
-    public LocationQueryMatch(PolygonLocation locationResult, Optional<DelaunayTriangle> triangle, Optional<Pair<MutablePoint, MutablePoint>> edge) {
+    public LocationQueryMatch(PolygonLocation locationResult, Optional<DelaunayTriangle> triangle, Optional<Pair<CoordinatePoint, CoordinatePoint>> edge) {
         this.locationResult = locationResult;
         this.triangle = triangle;
         this.edge = edge;

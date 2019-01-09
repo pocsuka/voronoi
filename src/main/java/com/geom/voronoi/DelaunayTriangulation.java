@@ -50,17 +50,7 @@ public class DelaunayTriangulation {
         return s.toString();
     }
 
-    void move_legal_point(MutablePoint point_i, MutablePoint point_r) {
-        for (DelaunayTriangle triangle : get_valid_triangles()) {
-            for (MutablePoint point : triangle.points()) {
-                if (point == point_i) {
-                    point.setPointD(point_r.getPointD());
-                }
-            }
-        }
-    }
-
-    Optional<DelaunayTriangle> find_triangle_with_vertices(List<MutablePoint> vertices) {
+    Optional<DelaunayTriangle> find_triangle_with_vertices(List<CoordinatePoint> vertices) {
         for (DelaunayTriangle triangle : get_valid_triangles()) {
             if (triangle.points().containsAll(vertices)) {
                 return Optional.of(triangle);
@@ -69,7 +59,7 @@ public class DelaunayTriangulation {
         return Optional.empty();
     }
 
-    LocationQueryMatch find_surrounding_triangle(MutablePoint mpoint) {
+    LocationQueryMatch find_surrounding_triangle(CoordinatePoint mpoint) {
         PointD point = mpoint.getPointD();
 
         for (DelaunayTriangle triangle : get_valid_triangles()) {
@@ -80,7 +70,7 @@ public class DelaunayTriangulation {
             if (result == PolygonLocation.INSIDE) {
                 return new LocationQueryMatch(PolygonLocation.INSIDE, Optional.of(triangle), Optional.empty());
             } else if (result == PolygonLocation.EDGE || result == PolygonLocation.VERTEX) {
-                Optional<Pair<MutablePoint, MutablePoint>> edge = get_incident_edge_of_point(mpoint, triangle);
+                Optional<Pair<CoordinatePoint, CoordinatePoint>> edge = get_incident_edge_of_point(mpoint, triangle);
                 if (edge.isPresent()) {
                     return new LocationQueryMatch(PolygonLocation.EDGE, Optional.of(triangle), edge);
                 } else {
@@ -92,7 +82,7 @@ public class DelaunayTriangulation {
         return new LocationQueryMatch(PolygonLocation.OUTSIDE, Optional.empty(), Optional.empty());
     }
 
-    private Optional<Pair<MutablePoint, MutablePoint>> get_incident_edge_of_point(MutablePoint mpoint, DelaunayTriangle triangle) {
+    private Optional<Pair<CoordinatePoint, CoordinatePoint>> get_incident_edge_of_point(CoordinatePoint mpoint, DelaunayTriangle triangle) {
         PointD point = mpoint.getPointD();
 
         PolygonLocation edge_ab_test = GeoUtils.pointInPolygon(point, new PointD[]{triangle.point_a.getPointD(), triangle.point_b.getPointD()});
@@ -112,8 +102,8 @@ public class DelaunayTriangulation {
     }
 
     // Find the triangle neighboring triangle over the edge (vertex_a, vertex_b)
-    Optional<DelaunayTriangle> adjacent_triangle_over_edge(DelaunayTriangle triangle, MutablePoint vertex_a, MutablePoint vertex_b) {
-        MutablePoint initialPoint = triangle.getRemainingPoint(vertex_a, vertex_b);
+    Optional<DelaunayTriangle> adjacent_triangle_over_edge(DelaunayTriangle triangle, CoordinatePoint vertex_a, CoordinatePoint vertex_b) {
+        CoordinatePoint initialPoint = triangle.getRemainingPoint(vertex_a, vertex_b);
 
         for (DelaunayTriangle other_triangle : get_valid_triangles()) {
             if (other_triangle.points().containsAll(Arrays.asList(vertex_a, vertex_b))) {
@@ -126,16 +116,26 @@ public class DelaunayTriangulation {
     }
 
     // Returns point_k != point_r, which is the remaining defining point of triangle (point_i, point_j, point_k)
-    Optional<MutablePoint> adjacent_triangle_point(MutablePoint point_r, MutablePoint point_i, MutablePoint point_j) {
+    Optional<CoordinatePoint> adjacent_triangle_point(CoordinatePoint point_r, CoordinatePoint point_i, CoordinatePoint point_j) {
         // TODO way too slow
         for (DelaunayTriangle triangle : get_valid_triangles()) {
             if (triangle.hasPoint(point_i) && triangle.hasPoint(point_j)) {
-                MutablePoint other_point = triangle.getRemainingPoint(point_i, point_j);
+                CoordinatePoint other_point = triangle.getRemainingPoint(point_i, point_j);
                 if (other_point != point_r) {
                     return Optional.of(other_point);
                 }
             }
         }
         return Optional.empty();
+    }
+
+    void removeIncidentTriangles(List<CoordinatePoint> omegas) {
+        for (CoordinatePoint omega : omegas) {
+            for (DelaunayTriangle triangle : get_valid_triangles()) {
+                if (triangle.hasPoint(omega)) {
+                    triangle.is_valid = false;
+                }
+            }
+        }
     }
 }
