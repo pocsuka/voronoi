@@ -1,9 +1,7 @@
 package com.geom.voronoi;
 
 import javafx.util.Pair;
-import org.kynosarges.tektosyne.geometry.GeoUtils;
-import org.kynosarges.tektosyne.geometry.PointD;
-import org.kynosarges.tektosyne.geometry.PolygonLocation;
+import org.kynosarges.tektosyne.geometry.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -85,16 +83,16 @@ public class DelaunayTriangulation {
     private Optional<Pair<CoordinatePoint, CoordinatePoint>> get_incident_edge_of_point(CoordinatePoint mpoint, DelaunayTriangle triangle) {
         PointD point = mpoint.getPointD();
 
-        PolygonLocation edge_ab_test = GeoUtils.pointInPolygon(point, new PointD[]{triangle.point_a.getPointD(), triangle.point_b.getPointD()});
-        if (edge_ab_test == PolygonLocation.EDGE || edge_ab_test == PolygonLocation.VERTEX) {
+        LineLocation edge_ab_test = (new LineD(triangle.point_a.getPointD(), triangle.point_b.getPointD())).locate(point);
+        if (edge_ab_test == LineLocation.BETWEEN || edge_ab_test == LineLocation.START || edge_ab_test == LineLocation.END) {
             return Optional.of(new Pair<>(triangle.point_a, triangle.point_b));
         }
-        PolygonLocation edge_ac_test = GeoUtils.pointInPolygon(point, new PointD[]{triangle.point_a.getPointD(), triangle.point_c.getPointD()});
-        if (edge_ac_test == PolygonLocation.EDGE || edge_ac_test == PolygonLocation.VERTEX) {
+        LineLocation edge_ac_test = (new LineD(triangle.point_a.getPointD(), triangle.point_c.getPointD()).locate(point));
+        if (edge_ac_test == LineLocation.BETWEEN || edge_ac_test == LineLocation.START || edge_ac_test == LineLocation.END) {
             return Optional.of(new Pair<>(triangle.point_a, triangle.point_c));
         }
-        PolygonLocation edge_bc_test = GeoUtils.pointInPolygon(point, new PointD[]{triangle.point_b.getPointD(), triangle.point_c.getPointD()});
-        if (edge_bc_test == PolygonLocation.EDGE || edge_bc_test == PolygonLocation.VERTEX) {
+        LineLocation edge_bc_test = (new LineD(triangle.point_b.getPointD(), triangle.point_c.getPointD()).locate(point));
+        if (edge_bc_test == LineLocation.BETWEEN || edge_bc_test == LineLocation.START || edge_bc_test == LineLocation.END) {
             return Optional.of(new Pair<>(triangle.point_b, triangle.point_c));
         }
 

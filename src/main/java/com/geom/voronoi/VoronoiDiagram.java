@@ -13,6 +13,8 @@ public class VoronoiDiagram {
     private DelaunayTriangulation delaunay;
 
     public VoronoiDiagram(List<CoordinatePoint> points) {
+        System.out.println(pointsDebugString(points));
+
         List<CoordinatePoint> omegas = get_omegas();
         delaunay = new DelaunayTriangulation();
         delaunay.insert(new DelaunayTriangle(omegas.get(0), omegas.get(1), omegas.get(2), true));
@@ -38,23 +40,86 @@ public class VoronoiDiagram {
                 }
             }
         });
-        delaunay.removeIncidentTriangles(omegas);
+//        delaunay.removeIncidentTriangles(omegas);
 
         System.out.println(delaunay.validTrianglesDebugString());
     }
 
     public static void main(String[] args) {
-        List<CoordinatePoint> points = new ArrayList<CoordinatePoint>(Arrays.asList(
-            new CoordinatePoint(new PointD(15.3, 17.2))
-            , new CoordinatePoint(new PointD(53.17, 89.81))
-            , new CoordinatePoint(new PointD(321.7, 18.91))
-            , new CoordinatePoint(new PointD(103.0, 131.5))
-            , new CoordinatePoint(new PointD(253.0, 252.1))
-            , new CoordinatePoint(new PointD(134.0, 32.5))
-            , new CoordinatePoint(new PointD(15.0, 98.3))
-            , new CoordinatePoint(new PointD(3.0, 20.1))
-            , new CoordinatePoint(new PointD(104, 200.5))
-            , new CoordinatePoint(new PointD(123, -100.4))
+        List<CoordinatePoint> points = new ArrayList<>(Arrays.asList(
+//            new CoordinatePoint(new PointD(15.3, 17.2))
+//            , new CoordinatePoint(new PointD(53.17, 89.81))
+//            , new CoordinatePoint(new PointD(321.7, 18.91))
+//            , new CoordinatePoint(new PointD(103.0, 131.5))
+//            , new CoordinatePoint(new PointD(-253.0, -152.1))
+//            , new CoordinatePoint(new PointD(134.0, 32.5))
+//            , new CoordinatePoint(new PointD(15.0, 98.3))
+//            , new CoordinatePoint(new PointD(3.0, 20.1))
+//            , new CoordinatePoint(new PointD(104, 200.5))
+//            , new CoordinatePoint(new PointD(123, -100.4))
+            new CoordinatePoint(new PointD(0, 0))
+            , new CoordinatePoint(new PointD(10, 0))
+            , new CoordinatePoint(new PointD(20, 0))
+            , new CoordinatePoint(new PointD(30, 0))
+            , new CoordinatePoint(new PointD(40, 0))
+            , new CoordinatePoint(new PointD(50, 0))
+            , new CoordinatePoint(new PointD(60, 0))
+            , new CoordinatePoint(new PointD(70, 0))
+            , new CoordinatePoint(new PointD(80, 0))
+            , new CoordinatePoint(new PointD(90, 0))
+            , new CoordinatePoint(new PointD(100, 0))
+            , new CoordinatePoint(new PointD(110, 0))
+            , new CoordinatePoint(new PointD(120, 0))
+            , new CoordinatePoint(new PointD(130, 0))
+            , new CoordinatePoint(new PointD(140, 0))
+            , new CoordinatePoint(new PointD(150, 0))
+            , new CoordinatePoint(new PointD(160, 0))
+            , new CoordinatePoint(new PointD(170, 0))
+            , new CoordinatePoint(new PointD(180, 0))
+            , new CoordinatePoint(new PointD(190, 0))
+            , new CoordinatePoint(new PointD(200, 0))
+            , new CoordinatePoint(new PointD(0, 10))
+            , new CoordinatePoint(new PointD(10, 10))
+            , new CoordinatePoint(new PointD(20, 10))
+            , new CoordinatePoint(new PointD(30, 10))
+            , new CoordinatePoint(new PointD(40, 10))
+            , new CoordinatePoint(new PointD(50, 10))
+            , new CoordinatePoint(new PointD(60, 10))
+            , new CoordinatePoint(new PointD(70, 10))
+            , new CoordinatePoint(new PointD(80, 10))
+            , new CoordinatePoint(new PointD(90, 10))
+            , new CoordinatePoint(new PointD(100, 10))
+            , new CoordinatePoint(new PointD(110, 10))
+            , new CoordinatePoint(new PointD(120, 10))
+            , new CoordinatePoint(new PointD(130, 10))
+            , new CoordinatePoint(new PointD(140, 10))
+            , new CoordinatePoint(new PointD(150, 10))
+            , new CoordinatePoint(new PointD(160, 10))
+            , new CoordinatePoint(new PointD(170, 10))
+            , new CoordinatePoint(new PointD(180, 10))
+            , new CoordinatePoint(new PointD(190, 10))
+            , new CoordinatePoint(new PointD(200, 10))
+            , new CoordinatePoint(new PointD(0, 20))
+            , new CoordinatePoint(new PointD(10, 20))
+            , new CoordinatePoint(new PointD(20, 20))
+            , new CoordinatePoint(new PointD(30, 20))
+            , new CoordinatePoint(new PointD(40, 20))
+            , new CoordinatePoint(new PointD(50, 20))
+            , new CoordinatePoint(new PointD(60, 20))
+            , new CoordinatePoint(new PointD(70, 20))
+            , new CoordinatePoint(new PointD(80, 20))
+            , new CoordinatePoint(new PointD(90, 20))
+            , new CoordinatePoint(new PointD(100, 20))
+            , new CoordinatePoint(new PointD(110, 20))
+            , new CoordinatePoint(new PointD(120, 20))
+            , new CoordinatePoint(new PointD(130, 20))
+            , new CoordinatePoint(new PointD(140, 20))
+            , new CoordinatePoint(new PointD(150, 20))
+            , new CoordinatePoint(new PointD(160, 20))
+            , new CoordinatePoint(new PointD(170, 20))
+            , new CoordinatePoint(new PointD(180, 20))
+            , new CoordinatePoint(new PointD(190, 20))
+            , new CoordinatePoint(new PointD(200, 20))
         ));
         VoronoiDiagram vd = new VoronoiDiagram(points);
     }
@@ -97,9 +162,9 @@ public class VoronoiDiagram {
     private List<CoordinatePoint> get_omegas() {
         // TODO make dependent on input area
         return Arrays.asList(
-            new CoordinatePoint(new PointD(-500.0, -500.0)),
-            new CoordinatePoint(new PointD(600.0, 0.9)),
-            new CoordinatePoint(new PointD(0.9, 300.0))
+            new CoordinatePoint(new PointD(-10.0, -50.0)),
+            new CoordinatePoint(new PointD(300.0, 10)),
+            new CoordinatePoint(new PointD(-30, 50.0))
         );
     }
 
