@@ -1,10 +1,7 @@
 package com.geom.voronoi;
 
-import javafx.event.EventHandler;
 import javafx.geometry.*;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.*;
 import javafx.scene.shape.*;
@@ -12,90 +9,102 @@ import javafx.stage.*;
 
 import org.kynosarges.tektosyne.geometry.*;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class VoronoiDialog extends Stage {
 
-    public static final int MENUHEIGHT = 16;
     private final Pane _output = new Pane();
     private PointD[] _points;
-    private List<PointD> triangulationPoints = new ArrayList<>();
-
 
     public VoronoiDialog() {
         initOwner(Global.primaryStage());
         initModality(Modality.APPLICATION_MODAL);
         initStyle(StageStyle.DECORATED);
 
-        final Label message = new Label();
+       Global.clipChildren(_output);
+        _output.setPrefSize(600, 400);
 
-
-        Global.clipChildren(_output);
-        _output.setPrefSize(400, 300);
-
-        final VBox root = new VBox(message, _output);
-        root.setPadding(new Insets(0));
-        root.setSpacing(0);
+        final VBox root = new VBox( _output);
+        root.setPadding(new Insets(8));
+        root.setSpacing(8);
         VBox.setVgrow(_output, Priority.ALWAYS);
-        
+
         setResizable(true);
         setScene(new Scene(root));
         setTitle("Voronoi & Delaunay Test");
         sizeToScene();
-        this.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                PointD newPoint = new PointD(mouseEvent.getX(), mouseEvent.getY());
-                triangulationPoints.add(newPoint);
-                if(triangulationPoints.size() > 1) {
-                    draw(triangulationPoints);
-                }
-            }
-        });
-        
+
+        setOnShown(t -> draw(null));
     }
 
-    private void draw(List<PointD> triangulationPoints) {
+    /**
+     * Draws a Voronoi diagram for the specified {@link PointD} array.
+     * Creates a new {@link PointD} array if {@code points} is {@code null}.
+     *
+     * @param points the {@link PointD} array whose Voronoi diagram to draw
+     */
+    private void draw(PointD[] points) {
         final double diameter = 4;
 
-        // generate new random point set if desired
-//        if (points == null) {
-//            final double width = _output.getWidth();
-//            final double height = _output.getHeight();
-//            final RectD bounds = new RectD(0.1 * width, 0.1 * height, 0.9 * width, 0.9 * height);
-//
-//            final int count = 4 + Global.RANDOM.nextInt(17);
-//            points = GeoUtils.randomPoints(count, bounds, new PointDComparatorY(0), diameter);
-//        }
-//
-//        _points = points;
-        PointD[] points = triangulationPoints.toArray(new PointD[triangulationPoints.size()]);
-        final RectD clip = new RectD(0, 0, _output.getWidth(), _output.getHeight());
+    InputReader inputReader = new InputReader();
+    inputReader.readFile("c:/git/voronoi/src/main/resources/circle10.txt");
+//        List<PointD> input = new ArrayList<>(Arrays.asList(
+//             (new PointD(253.0, 252.1))
+//            , (new PointD(53.17, 89.81))
+//            , (new PointD(321.7, 18.91))
+//            , (new PointD(103.0, 131.5))
+//            , (new PointD(134.0, 32.5))
+//            , (new PointD(15.0, 98.3))
+//            , (new PointD(3.0, 20.1))
+//            , (new PointD(104, 200.5))
+//        ));
 
-        final VoronoiResults results = Voronoi.findAll(points, clip);
+    List<PointD> input;
+    input = inputReader.points;
+
+        _points = input.toArray(new PointD[input.size()]);
+
+        List<Triangle> triangles = null;
+
+        final RectD clip = new RectD(0, 0, _output.getWidth(), _output.getHeight());
+        final VoronoiResults results = Voronoi.findAll(input.toArray(new PointD[input.size()]), clip);
         _output.getChildren().clear();
 
+
+        DelaunayTriangulator delaunayTriangulator = new DelaunayTriangulator(input, inputReader.getWidth(), inputReader.getHeight());
+        delaunayTriangulator.triangulate();
+
+        triangles = delaunayTriangulator.getTriangleSet();
+
+
+        for (PointD point: input) {
+            final Circle shape = new Circle(point.x, point.y, diameter / 2);
+            shape.setFill(Color.BLACK);
+            shape.setStroke(Color.BLACK);
+            _output.getChildren().add(shape);
+        }
+
         // draw interior of Voronoi regions
-        for (PointD[] region: results.voronoiRegions()) {
-            final Polygon polygon = new Polygon(PointD.toDoubles(region));
-            polygon.setFill(Color.PALEGOLDENROD);
-            polygon.setStroke(Color.WHITE);
-            polygon.setStrokeWidth(6);
-            _output.getChildren().add(polygon);
-        }
+//        for (PointD[] region: results.voronoiRegions()) {
+//            final Polygon polygon = new Polygon(PointD.toDoubles(region));
+//            polygon.setFill(Color.PALEGOLDENROD);
+//            polygon.setStroke(Color.WHITE);
+//            polygon.setStrokeWidth(6);
+//            _output.getChildren().add(polygon);
+//        }
 
-        // draw edges of Voronoi diagram
-        for (VoronoiEdge edge: results.voronoiEdges) {
-            final PointD start = results.voronoiVertices[edge.vertex1];
-            final PointD end = results.voronoiVertices[edge.vertex2];
-
-            final Line line = new Line(start.x, start.y, end.x, end.y);
-            line.setStroke(Color.RED);
-            _output.getChildren().add(line);
-        }
+//        // draw edges of Voronoi diagram
+//        for (VoronoiEdge edge: results.voronoiEdges) {
+//            final PointD start = results.voronoiVertices[edge.vertex1];
+//            final PointD end = results.voronoiVertices[edge.vertex2];
+//
+//            final Line line = new Line(start.x, start.y, end.x, end.y);
+//            line.setStroke(Color.RED);
+//            _output.getChildren().add(line);
+//        }
 
         // draw edges of Delaunay triangulation
 //        for (LineD edge: results.delaunayEdges()) {
@@ -104,20 +113,26 @@ public class VoronoiDialog extends Stage {
 //            line.setStroke(Color.BLUE);
 //            _output.getChildren().add(line);
 //        }
+        for (Triangle triangle : triangles) {
 
-        // draw generator points
-        for (PointD point: points) {
-            final Circle shape = new Circle(point.x, point.y - MENUHEIGHT, diameter / 2);
-            shape.setFill(Color.BLACK);
-            shape.setStroke(Color.BLACK);
-            _output.getChildren().add(shape);
+            final Line ab = new Line (triangle.getA().x, triangle.getA().y, triangle.getB().x, triangle.getB().y );
+
+            ab.setStroke(Color.RED);
+            _output.getChildren().add(ab);
+
+            final Line ac = new Line (triangle.getA().x, triangle.getA().y, triangle.getC().x, triangle.getC().y );
+
+            ac.setStroke(Color.RED);
+            _output.getChildren().add(ac);
+
+            final Line bc = new Line (triangle.getB().x, triangle.getB().y, triangle.getC().x, triangle.getC().y );
+
+            bc.setStroke(Color.RED);
+            _output.getChildren().add(bc);
         }
 
-        PointD[][] regions = results.voronoiRegions();
+        // draw generator points
 
-        Arrays.stream(regions).
-            map(element -> Math.abs(GeoUtils.polygonArea(element))).
-            collect(Collectors.toList()).stream().
-            forEach(area -> System.out.println(area));
+
     }
 }
