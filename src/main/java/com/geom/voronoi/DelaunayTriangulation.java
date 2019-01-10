@@ -136,4 +136,36 @@ public class DelaunayTriangulation {
             }
         }
     }
+
+    VoronoiEdgeCollection toVoronoi() {
+        VoronoiEdgeCollection voronoi = new VoronoiEdgeCollection();
+
+        for (DelaunayTriangle triangle : get_valid_triangles()) {
+            CoordinatePoint p_a = triangle.getCentroid();
+
+            for (DelaunayTriangle neighbor : getNeighbors(triangle)) {
+                CoordinatePoint p_b = neighbor.getCentroid();
+
+                voronoi.insertIfDoesNotExist(new Pair<>(p_a, p_b));
+            }
+        }
+
+        return voronoi;
+    }
+
+    private List<DelaunayTriangle> getNeighbors(DelaunayTriangle triangle) {
+        List<Pair<CoordinatePoint, CoordinatePoint>> edges = Arrays.asList(
+            new Pair<>(triangle.point_a, triangle.point_b),
+            new Pair<>(triangle.point_b, triangle.point_c),
+            new Pair<>(triangle.point_c, triangle.point_a)
+        );
+
+        List<DelaunayTriangle> neighbors = new ArrayList<>();
+        for (Pair<CoordinatePoint, CoordinatePoint> edge : edges) {
+            Optional<DelaunayTriangle> candidate = adjacent_triangle_over_edge(triangle, edge.getKey(), edge.getValue());
+            candidate.ifPresent(neighbors::add);
+        }
+
+        return neighbors;
+    }
 }

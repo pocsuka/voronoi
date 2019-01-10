@@ -42,4 +42,8 @@ public class DelaunayTriangle {
             ", is_valid=" + is_valid +
             '}';
     }
+
+    CoordinatePoint getCentroid() {
+        return CoordinatePoint.getCentroid(Arrays.asList(point_a, point_b, point_c));
+    }
 }

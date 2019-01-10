@@ -11,6 +11,7 @@ import java.util.Optional;
 
 public class VoronoiDiagram {
     private DelaunayTriangulation delaunay;
+    private VoronoiEdgeCollection voronoi;
 
     public VoronoiDiagram(List<CoordinatePoint> points) {
         System.out.println(pointsDebugString(points));
@@ -40,9 +41,12 @@ public class VoronoiDiagram {
                 }
             }
         });
-//        delaunay.removeIncidentTriangles(omegas);
+        delaunay.removeIncidentTriangles(omegas);
+        VoronoiEdgeCollection voronoi = delaunay.toVoronoi();
 
         System.out.println(delaunay.validTrianglesDebugString());
+        System.out.println(voronoi.edgesDebugString());
+
     }
 
     public static void main(String[] args) {

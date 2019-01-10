@@ -2,15 +2,27 @@ package com.geom.voronoi;
 
 import org.kynosarges.tektosyne.geometry.PointD;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-// TODO check if CoordinatePoint must actually be mutable
 public class CoordinatePoint {
     private PointD point;
 
     public CoordinatePoint(PointD point) {
         this.point = point;
+    }
+
+    static CoordinatePoint getCentroid(List<CoordinatePoint> coordinatePoints) {
+        int n = coordinatePoints.size();
+        double sumX = 0;
+        double sumY = 0;
+        for (CoordinatePoint point : coordinatePoints) {
+            sumX += point.getPointD().x;
+            sumY += point.getPointD().y;
+        }
+
+        return new CoordinatePoint(new PointD(sumX / n, sumY / n));
     }
 
     PointD getPointD() {
