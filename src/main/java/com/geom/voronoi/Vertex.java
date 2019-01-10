@@ -6,23 +6,23 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-public class CoordinatePoint {
+public class Vertex {
     private PointD point;
 
-    public CoordinatePoint(PointD point) {
+    public Vertex(PointD point) {
         this.point = point;
     }
 
-    static CoordinatePoint getCentroid(List<CoordinatePoint> coordinatePoints) {
-        int n = coordinatePoints.size();
+    static Vertex getCentroid(List<Vertex> vertices) {
+        int n = vertices.size();
         double sumX = 0;
         double sumY = 0;
-        for (CoordinatePoint point : coordinatePoints) {
+        for (Vertex point : vertices) {
             sumX += point.getPointD().x;
             sumY += point.getPointD().y;
         }
 
-        return new CoordinatePoint(new PointD(sumX / n, sumY / n));
+        return new Vertex(new PointD(sumX / n, sumY / n));
     }
 
     PointD getPointD() {
@@ -33,7 +33,7 @@ public class CoordinatePoint {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CoordinatePoint that = (CoordinatePoint) o;
+        Vertex that = (Vertex) o;
         return Double.compare(that.getPointD().x, getPointD().x) == 0 &&
             Double.compare(that.getPointD().y, getPointD().y) == 0;
     }

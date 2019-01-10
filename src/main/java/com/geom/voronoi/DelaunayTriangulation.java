@@ -1,6 +1,5 @@
 package com.geom.voronoi;
 
-import javafx.util.Pair;
 import org.kynosarges.tektosyne.geometry.*;
 
 import java.util.ArrayList;
@@ -48,7 +47,7 @@ public class DelaunayTriangulation {
         return s.toString();
     }
 
-    Optional<DelaunayTriangle> find_triangle_with_vertices(List<CoordinatePoint> vertices) {
+    Optional<DelaunayTriangle> find_triangle_with_vertices(List<Vertex> vertices) {
         for (DelaunayTriangle triangle : get_valid_triangles()) {
             if (triangle.points().containsAll(vertices)) {
                 return Optional.of(triangle);
@@ -57,7 +56,7 @@ public class DelaunayTriangulation {
         return Optional.empty();
     }
 
-    LocationQueryMatch find_surrounding_triangle(CoordinatePoint mpoint) {
+    LocationQueryMatch find_surrounding_triangle(Vertex mpoint) {
         PointD point = mpoint.getPointD();
 
         for (DelaunayTriangle triangle : get_valid_triangles()) {
@@ -68,7 +67,7 @@ public class DelaunayTriangulation {
             if (result == PolygonLocation.INSIDE) {
                 return new LocationQueryMatch(PolygonLocation.INSIDE, Optional.of(triangle), Optional.empty());
             } else if (result == PolygonLocation.EDGE || result == PolygonLocation.VERTEX) {
-                Optional<Pair<CoordinatePoint, CoordinatePoint>> edge = get_incident_edge_of_point(mpoint, triangle);
+                Optional<Edge> edge = get_incident_edge_of_point(mpoint, triangle);
                 if (edge.isPresent()) {
                     return new LocationQueryMatch(PolygonLocation.EDGE, Optional.of(triangle), edge);
                 } else {
@@ -80,32 +79,32 @@ public class DelaunayTriangulation {
         return new LocationQueryMatch(PolygonLocation.OUTSIDE, Optional.empty(), Optional.empty());
     }
 
-    private Optional<Pair<CoordinatePoint, CoordinatePoint>> get_incident_edge_of_point(CoordinatePoint mpoint, DelaunayTriangle triangle) {
+    private Optional<Edge> get_incident_edge_of_point(Vertex mpoint, DelaunayTriangle triangle) {
         PointD point = mpoint.getPointD();
 
         LineLocation edge_ab_test = (new LineD(triangle.point_a.getPointD(), triangle.point_b.getPointD())).locate(point);
         if (edge_ab_test == LineLocation.BETWEEN || edge_ab_test == LineLocation.START || edge_ab_test == LineLocation.END) {
-            return Optional.of(new Pair<>(triangle.point_a, triangle.point_b));
+            return Optional.of(new Edge(triangle.point_a, triangle.point_b));
         }
         LineLocation edge_ac_test = (new LineD(triangle.point_a.getPointD(), triangle.point_c.getPointD()).locate(point));
         if (edge_ac_test == LineLocation.BETWEEN || edge_ac_test == LineLocation.START || edge_ac_test == LineLocation.END) {
-            return Optional.of(new Pair<>(triangle.point_a, triangle.point_c));
+            return Optional.of(new Edge(triangle.point_a, triangle.point_c));
         }
         LineLocation edge_bc_test = (new LineD(triangle.point_b.getPointD(), triangle.point_c.getPointD()).locate(point));
         if (edge_bc_test == LineLocation.BETWEEN || edge_bc_test == LineLocation.START || edge_bc_test == LineLocation.END) {
-            return Optional.of(new Pair<>(triangle.point_b, triangle.point_c));
+            return Optional.of(new Edge(triangle.point_b, triangle.point_c));
         }
 
         return Optional.empty();
     }
 
-    // Find the triangle neighboring triangle over the edge (vertex_a, vertex_b)
-    Optional<DelaunayTriangle> adjacent_triangle_over_edge(DelaunayTriangle triangle, CoordinatePoint vertex_a, CoordinatePoint vertex_b) {
-        CoordinatePoint initialPoint = triangle.getRemainingPoint(vertex_a, vertex_b);
+    // Find the triangle neighboring triangle over the edge
+    Optional<DelaunayTriangle> adjacent_triangle_over_edge(DelaunayTriangle triangle, Edge edge) {
+        Vertex initialPoint = triangle.getRemainingPoint(edge.getStart(), edge.getEnd());
 
         for (DelaunayTriangle other_triangle : get_valid_triangles()) {
-            if (other_triangle.points().containsAll(Arrays.asList(vertex_a, vertex_b))) {
-                if (other_triangle.getRemainingPoint(vertex_a, vertex_b) != initialPoint) {
+            if (other_triangle.points().containsAll(Arrays.asList(edge.getStart(), edge.getEnd()))) {
+                if (other_triangle.getRemainingPoint(edge.getStart(), edge.getEnd()) != initialPoint) {
                     return Optional.of(other_triangle);
                 }
             }
@@ -114,11 +113,11 @@ public class DelaunayTriangulation {
     }
 
     // Returns point_k != point_r, which is the remaining defining point of triangle (point_i, point_j, point_k)
-    Optional<CoordinatePoint> adjacent_triangle_point(CoordinatePoint point_r, CoordinatePoint point_i, CoordinatePoint point_j) {
+    Optional<Vertex> adjacent_triangle_point(Vertex point_r, Vertex point_i, Vertex point_j) {
         // TODO way too slow
         for (DelaunayTriangle triangle : get_valid_triangles()) {
             if (triangle.hasPoint(point_i) && triangle.hasPoint(point_j)) {
-                CoordinatePoint other_point = triangle.getRemainingPoint(point_i, point_j);
+                Vertex other_point = triangle.getRemainingPoint(point_i, point_j);
                 if (other_point != point_r) {
                     return Optional.of(other_point);
                 }
@@ -127,8 +126,8 @@ public class DelaunayTriangulation {
         return Optional.empty();
     }
 
-    void removeIncidentTriangles(List<CoordinatePoint> omegas) {
-        for (CoordinatePoint omega : omegas) {
+    void removeIncidentTriangles(List<Vertex> omegas) {
+        for (Vertex omega : omegas) {
             for (DelaunayTriangle triangle : get_valid_triangles()) {
                 if (triangle.hasPoint(omega)) {
                     triangle.is_valid = false;
@@ -141,12 +140,12 @@ public class DelaunayTriangulation {
         VoronoiEdgeCollection voronoi = new VoronoiEdgeCollection();
 
         for (DelaunayTriangle triangle : get_valid_triangles()) {
-            CoordinatePoint p_a = triangle.getCentroid();
+            Vertex p_a = triangle.getCentroid();
 
             for (DelaunayTriangle neighbor : getNeighbors(triangle)) {
-                CoordinatePoint p_b = neighbor.getCentroid();
+                Vertex p_b = neighbor.getCentroid();
 
-                voronoi.insertIfDoesNotExist(new Pair<>(p_a, p_b));
+                voronoi.insertIfDoesNotExist(new Edge(p_a, p_b));
             }
         }
 
@@ -154,15 +153,15 @@ public class DelaunayTriangulation {
     }
 
     private List<DelaunayTriangle> getNeighbors(DelaunayTriangle triangle) {
-        List<Pair<CoordinatePoint, CoordinatePoint>> edges = Arrays.asList(
-            new Pair<>(triangle.point_a, triangle.point_b),
-            new Pair<>(triangle.point_b, triangle.point_c),
-            new Pair<>(triangle.point_c, triangle.point_a)
+        List<Edge> edges = Arrays.asList(
+            new Edge(triangle.point_a, triangle.point_b),
+            new Edge(triangle.point_b, triangle.point_c),
+            new Edge(triangle.point_c, triangle.point_a)
         );
 
         List<DelaunayTriangle> neighbors = new ArrayList<>();
-        for (Pair<CoordinatePoint, CoordinatePoint> edge : edges) {
-            Optional<DelaunayTriangle> candidate = adjacent_triangle_over_edge(triangle, edge.getKey(), edge.getValue());
+        for (Edge edge : edges) {
+            Optional<DelaunayTriangle> candidate = adjacent_triangle_over_edge(triangle, edge);
             candidate.ifPresent(neighbors::add);
         }
 
