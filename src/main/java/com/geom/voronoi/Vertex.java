@@ -13,6 +13,10 @@ public class Vertex {
         this.point = point;
     }
 
+    public static Vertex fromCoordinate(double x, double y) {
+        return new Vertex(new PointD(x, y));
+    }
+
     static Vertex getCentroid(List<Vertex> vertices) {
         int n = vertices.size();
         double sumX = 0;

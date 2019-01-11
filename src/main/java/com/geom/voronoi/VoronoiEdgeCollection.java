@@ -11,7 +11,7 @@ public class VoronoiEdgeCollection {
     }
 
     private boolean hasEdge(Edge query_edge) {
-        for (Edge edge : edges) {
+        for (Edge edge : getEdges()) {
             if (edge.equals(query_edge)) {
                 return true;
             }
