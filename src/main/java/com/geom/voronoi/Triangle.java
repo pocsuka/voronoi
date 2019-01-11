@@ -5,6 +5,8 @@ import org.kynosarges.tektosyne.geometry.LineD;
 import org.kynosarges.tektosyne.geometry.PointD;
 import org.kynosarges.tektosyne.geometry.PolygonLocation;
 
+import java.util.*;
+
 public class Triangle {
 
     private PointD a;
@@ -69,6 +71,31 @@ public class Triangle {
         }
 
         return null;
+    }
+
+    public LinePointDistanceWrapper findTriangleNearestEdge(PointD point) {
+
+        LineD ab = new LineD(this.a, this.b);
+        LineD bc = new LineD(this.b, this.c);
+        LineD ca = new LineD(this.c, this.a);
+
+        List<LineD> edges = new ArrayList<>() {{
+            add(ab);
+            add(bc);
+            add(ca);
+        }};
+
+        int index = -1;
+        Double minDistance = Double.MAX_VALUE;
+
+        for (int i = 0; i < edges.size(); i++) {
+            double distance = edges.get(i).intersect(point).subtract(point).length();
+            if (distance < minDistance) {
+                index = i;
+                minDistance = distance;
+            }
+        }
+        return new LinePointDistanceWrapper(edges.get(index), minDistance);
     }
 
     public PointD getA() {

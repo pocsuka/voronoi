@@ -4,6 +4,7 @@ import org.kynosarges.tektosyne.geometry.LineD;
 import org.kynosarges.tektosyne.geometry.PointD;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 class TriangleSet {
@@ -33,11 +34,27 @@ class TriangleSet {
             .orElse(null);
     }
 
-    public Triangle findNeighbour(Triangle triangle, LineD edge) {
+    public Triangle findNeighbourTriangle(Triangle triangle, LineD edge) {
         return triangleSet.stream()
             .filter(element -> element.isEdge(edge) && element!= triangle)
             .findFirst()
             .orElse(null);
+    }
+
+    public Triangle findSharingTriangle(LineD edge) {
+        return triangleSet.stream()
+            .filter(element -> element.isEdge(edge) )
+            .findFirst()
+            .orElse(null);
+    }
+
+    public LineD findNearestEdge(PointD point) {
+        List<LinePointDistanceWrapper> closeEdges = new ArrayList<>();
+
+        triangleSet.stream().forEach(triangle -> closeEdges.add(triangle.findTriangleNearestEdge(point)));
+
+        Collections.sort(closeEdges);
+        return closeEdges.get(0).getEdge();
     }
 
     public void removeByVertex(PointD vertex) {

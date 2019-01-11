@@ -34,25 +34,59 @@ public class DelaunayTriangulator implements Triangulator {
 //        Collections.sort(pointSet, new PointDComparatorY());
 
         for (int i = 0; i < pointSet.size(); i++) {
-            Triangle triangle = triangleSet.getTriangleThatContainsPoint(pointSet.get(i));
+            PointD currentPoint = pointSet.get(i);
 
-            PointD a = triangle.getA();
-            PointD b = triangle.getB();
-            PointD c = triangle.getC();
+            Triangle triangle = triangleSet.getTriangleThatContainsPoint(currentPoint);
 
-            triangleSet.remove(triangle);
+            if (triangle == null) {
 
-            Triangle first = new Triangle(a, b, pointSet.get(i));
-            Triangle second = new Triangle(b, c, pointSet.get(i));
-            Triangle third = new Triangle(c, a, pointSet.get(i));
+                LineD edge = triangleSet.findNearestEdge(currentPoint);
 
-            triangleSet.add(first);
-            triangleSet.add(second);
-            triangleSet.add(third);
+                Triangle first = triangleSet.findSharingTriangle(edge);
+                Triangle second = triangleSet.findNeighbourTriangle(first, edge);
 
-            legalizeEdge(first, new LineD(a, b), pointSet.get(i));
-            legalizeEdge(second, new LineD(b, c), pointSet.get(i));
-            legalizeEdge(third, new LineD(c, a), pointSet.get(i));
+                PointD firstRemovableVertex = first.getRemovableVertex(edge);
+                PointD secondRemovableVertex = second.getRemovableVertex(edge);
+
+                triangleSet.remove(first);
+                triangleSet.remove(second);
+
+                Triangle triangle1 = new Triangle(edge.start, firstRemovableVertex, currentPoint);
+                Triangle triangle2 = new Triangle(edge.end, firstRemovableVertex, currentPoint);
+                Triangle triangle3 = new Triangle(edge.start, secondRemovableVertex, currentPoint);
+                Triangle triangle4 = new Triangle(edge.end, secondRemovableVertex, currentPoint);
+
+                triangleSet.add(triangle1);
+                triangleSet.add(triangle2);
+                triangleSet.add(triangle3);
+                triangleSet.add(triangle4);
+
+                legalizeEdge(triangle1, new LineD(edge.start, firstRemovableVertex), currentPoint);
+                legalizeEdge(triangle2, new LineD(edge.end, firstRemovableVertex), currentPoint);
+                legalizeEdge(triangle3, new LineD(edge.start, secondRemovableVertex), currentPoint);
+                legalizeEdge(triangle4, new LineD(edge.end, secondRemovableVertex), currentPoint);
+
+            } else {
+
+                PointD a = triangle.getA();
+                PointD b = triangle.getB();
+                PointD c = triangle.getC();
+
+                triangleSet.remove(triangle);
+
+                Triangle first = new Triangle(a, b, currentPoint);
+                Triangle second = new Triangle(b, c, currentPoint);
+                Triangle third = new Triangle(c, a, currentPoint);
+
+                triangleSet.add(first);
+                triangleSet.add(second);
+                triangleSet.add(third);
+
+                legalizeEdge(first, new LineD(a, b), currentPoint);
+                legalizeEdge(second, new LineD(b, c), currentPoint);
+                legalizeEdge(third, new LineD(c, a), currentPoint);
+            }
+
         }
 
         triangleSet.removeByVertex(veryBigTriangle.getA());
@@ -62,7 +96,7 @@ public class DelaunayTriangulator implements Triangulator {
 
 
     private void legalizeEdge(Triangle triangle, LineD edge, PointD newVertex) {
-        Triangle neighbourTriangle = triangleSet.findNeighbour(triangle, edge);
+        Triangle neighbourTriangle = triangleSet.findNeighbourTriangle(triangle, edge);
 
         if (neighbourTriangle != null) {
             if (neighbourTriangle.isPointInsideOfCircumCircle(newVertex)) {

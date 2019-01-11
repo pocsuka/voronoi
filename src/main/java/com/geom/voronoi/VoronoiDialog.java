@@ -80,6 +80,8 @@ public class VoronoiDialog extends Stage {
         triangles = delaunayTriangulator.getTriangleSet();
 
 
+
+
         for (PointD point: input) {
             final Circle shape = new Circle(point.x, point.y, diameter / 2);
             shape.setFill(Color.BLACK);
@@ -95,7 +97,7 @@ public class VoronoiDialog extends Stage {
 //            polygon.setStrokeWidth(6);
 //            _output.getChildren().add(polygon);
 //        }
-
+//
 //        // draw edges of Voronoi diagram
 //        for (VoronoiEdge edge: results.voronoiEdges) {
 //            final PointD start = results.voronoiVertices[edge.vertex1];
@@ -105,14 +107,9 @@ public class VoronoiDialog extends Stage {
 //            line.setStroke(Color.RED);
 //            _output.getChildren().add(line);
 //        }
+        LineD[] edges = results.delaunayEdges();
+//         draw edges of Delaunay triangulation
 
-        // draw edges of Delaunay triangulation
-//        for (LineD edge: results.delaunayEdges()) {
-//            final Line line = new Line(edge.start.x, edge.start.y, edge.end.x, edge.end.y);
-//            line.getStrokeDashArray().addAll(3.0, 2.0);
-//            line.setStroke(Color.BLUE);
-//            _output.getChildren().add(line);
-//        }
         for (Triangle triangle : triangles) {
 
             final Line ab = new Line (triangle.getA().x, triangle.getA().y, triangle.getB().x, triangle.getB().y );
@@ -129,6 +126,13 @@ public class VoronoiDialog extends Stage {
 
             bc.setStroke(Color.RED);
             _output.getChildren().add(bc);
+        }
+
+        for (LineD edge: results.delaunayEdges()) {
+            final Line line = new Line(edge.start.x, edge.start.y, edge.end.x, edge.end.y);
+            line.getStrokeDashArray().addAll(3.0, 2.0);
+            line.setStroke(Color.BLUE);
+            _output.getChildren().add(line);
         }
 
         // draw generator points
