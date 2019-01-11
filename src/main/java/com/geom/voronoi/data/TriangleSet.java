@@ -1,4 +1,4 @@
-package com.geom.voronoi;
+package com.geom.voronoi.data;
 
 import org.kynosarges.tektosyne.geometry.LineD;
 import org.kynosarges.tektosyne.geometry.PointD;
@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-class TriangleSet {
+public class TriangleSet {
 
     private List<Triangle> triangleSet;
     

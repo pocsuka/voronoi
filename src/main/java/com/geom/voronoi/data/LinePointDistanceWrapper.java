@@ -1,4 +1,4 @@
-package com.geom.voronoi;
+package com.geom.voronoi.data;
 
 import org.kynosarges.tektosyne.geometry.LineD;
 

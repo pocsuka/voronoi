@@ -1,4 +1,4 @@
-package com.geom.voronoi;
+package com.geom.voronoi.utils;
 
 import org.kynosarges.tektosyne.geometry.PointD;
 
@@ -17,7 +17,7 @@ public class InputReader {
     private double RoundsOfPlayer2;
 
 
-    List<PointD> points;
+    private List<PointD> points;
 
     public InputReader( ) {
         this.points = new ArrayList<>();

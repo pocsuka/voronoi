@@ -1,12 +1,8 @@
-package com.geom.voronoi;
+package com.geom.voronoi.gui;
 
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javafx.scene.control.*;
@@ -14,8 +10,6 @@ import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.*;
 import javafx.stage.*;
-
-import org.kynosarges.tektosyne.geometry.*;
 
 /**
  * Provides global resources and helpers for the application.

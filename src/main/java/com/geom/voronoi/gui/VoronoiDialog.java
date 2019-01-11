@@ -1,5 +1,8 @@
-package com.geom.voronoi;
+package com.geom.voronoi.gui;
 
+import com.geom.voronoi.data.Triangle;
+import com.geom.voronoi.triangulation.DelaunayTriangulator;
+import com.geom.voronoi.utils.InputReader;
 import javafx.geometry.*;
 import javafx.scene.Scene;
 import javafx.scene.layout.*;
@@ -61,7 +64,7 @@ public class VoronoiDialog extends Stage {
 //        ));
 
     List<PointD> input;
-    input = inputReader.points;
+    input = inputReader.getPoints();
 
         _points = input.toArray(new PointD[input.size()]);
 

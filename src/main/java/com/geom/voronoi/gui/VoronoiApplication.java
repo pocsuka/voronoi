@@ -1,4 +1,4 @@
-package com.geom.voronoi;
+package com.geom.voronoi.gui;
 
 import javafx.application.Application;
 import javafx.event.*;

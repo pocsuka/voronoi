@@ -1,5 +1,8 @@
-package com.geom.voronoi;
+package com.geom.voronoi.triangulation;
 
+import com.geom.voronoi.data.Triangle;
+
+import com.geom.voronoi.data.TriangleSet;
 import org.kynosarges.tektosyne.geometry.LineD;
 import org.kynosarges.tektosyne.geometry.PointD;
 
