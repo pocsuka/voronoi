@@ -12,11 +12,13 @@ public class Triangle {
     private PointD a;
     private PointD b;
     private PointD c;
+    private PointD center;
 
     public Triangle(PointD a, PointD b, PointD c) {
         this.a = a;
         this.b = b;
         this.c = c;
+        this.center = GeoUtils.polygonCentroid(a, b, c);
     }
 
     public boolean isPointInside(PointD point) {
@@ -108,6 +110,10 @@ public class Triangle {
 
     public PointD getC() {
         return c;
+    }
+
+    public PointD getCenter() {
+        return center;
     }
 
     private PointD[] getPointsAsArray() {

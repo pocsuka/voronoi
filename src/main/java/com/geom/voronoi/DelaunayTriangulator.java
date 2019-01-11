@@ -117,8 +117,8 @@ public class DelaunayTriangulator implements Triangulator {
         }
     }
 
-    public List<Triangle> getTriangleSet() {
-        return triangleSet.getAll();
+    public TriangleSet getTriangleSet() {
+        return this.triangleSet;
     }
 
     private double getMaxAxisValue() {

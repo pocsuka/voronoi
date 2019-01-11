@@ -9,8 +9,6 @@ import javafx.stage.*;
 
 import org.kynosarges.tektosyne.geometry.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -77,17 +75,17 @@ public class VoronoiDialog extends Stage {
         DelaunayTriangulator delaunayTriangulator = new DelaunayTriangulator(input, inputReader.getWidth(), inputReader.getHeight());
         delaunayTriangulator.triangulate();
 
-        triangles = delaunayTriangulator.getTriangleSet();
+        triangles = delaunayTriangulator.getTriangleSet().getAll();
 
 
 
 
-        for (PointD point: input) {
-            final Circle shape = new Circle(point.x, point.y, diameter / 2);
-            shape.setFill(Color.BLACK);
-            shape.setStroke(Color.BLACK);
-            _output.getChildren().add(shape);
-        }
+//        for (PointD point: input) {
+//            final Circle shape = new Circle(point.x, point.y, diameter / 2);
+//            shape.setFill(Color.BLACK);
+//            shape.setStroke(Color.BLACK);
+//            _output.getChildren().add(shape);
+//        }
 
         // draw interior of Voronoi regions
 //        for (PointD[] region: results.voronoiRegions()) {
@@ -99,41 +97,46 @@ public class VoronoiDialog extends Stage {
 //        }
 //
 //        // draw edges of Voronoi diagram
-//        for (VoronoiEdge edge: results.voronoiEdges) {
-//            final PointD start = results.voronoiVertices[edge.vertex1];
-//            final PointD end = results.voronoiVertices[edge.vertex2];
-//
-//            final Line line = new Line(start.x, start.y, end.x, end.y);
-//            line.setStroke(Color.RED);
-//            _output.getChildren().add(line);
-//        }
+        for (VoronoiEdge edge: results.voronoiEdges) {
+            final PointD start = results.voronoiVertices[edge.vertex1];
+            final PointD end = results.voronoiVertices[edge.vertex2];
+
+            final Line line = new Line(start.x, start.y, end.x, end.y);
+            line.setStroke(Color.RED);
+            _output.getChildren().add(line);
+        }
         LineD[] edges = results.delaunayEdges();
 //         draw edges of Delaunay triangulation
 
         for (Triangle triangle : triangles) {
 
-            final Line ab = new Line (triangle.getA().x, triangle.getA().y, triangle.getB().x, triangle.getB().y );
+//            final Line ab = new Line (triangle.getA().x, triangle.getA().y, triangle.getB().x, triangle.getB().y );
+//
+//            ab.setStroke(Color.RED);
+//            _output.getChildren().add(ab);
+//
+//            final Line ac = new Line (triangle.getA().x, triangle.getA().y, triangle.getC().x, triangle.getC().y );
+//
+//            ac.setStroke(Color.RED);
+//            _output.getChildren().add(ac);
+//
+//            final Line bc = new Line (triangle.getB().x, triangle.getB().y, triangle.getC().x, triangle.getC().y );
+//
+//            bc.setStroke(Color.RED);
+//            _output.getChildren().add(bc);
 
-            ab.setStroke(Color.RED);
-            _output.getChildren().add(ab);
-
-            final Line ac = new Line (triangle.getA().x, triangle.getA().y, triangle.getC().x, triangle.getC().y );
-
-            ac.setStroke(Color.RED);
-            _output.getChildren().add(ac);
-
-            final Line bc = new Line (triangle.getB().x, triangle.getB().y, triangle.getC().x, triangle.getC().y );
-
-            bc.setStroke(Color.RED);
-            _output.getChildren().add(bc);
+            final Circle shape = new Circle(triangle.getCenter().x, triangle.getCenter().y, diameter / 2);
+            shape.setFill(Color.GREEN);
+            shape.setStroke(Color.GREEN);
+            _output.getChildren().add(shape);
         }
 
-        for (LineD edge: results.delaunayEdges()) {
-            final Line line = new Line(edge.start.x, edge.start.y, edge.end.x, edge.end.y);
-            line.getStrokeDashArray().addAll(3.0, 2.0);
-            line.setStroke(Color.BLUE);
-            _output.getChildren().add(line);
-        }
+//        for (LineD edge: results.delaunayEdges()) {
+//            final Line line = new Line(edge.start.x, edge.start.y, edge.end.x, edge.end.y);
+//            line.getStrokeDashArray().addAll(3.0, 2.0);
+//            line.setStroke(Color.BLUE);
+//            _output.getChildren().add(line);
+//        }
 
         // draw generator points
 
