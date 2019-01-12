@@ -18,7 +18,7 @@ public class Triangle {
         this.a = a;
         this.b = b;
         this.c = c;
-        this.center = GeoUtils.polygonCentroid(a, b, c);
+        this.center = getCircumCenter(a, b, c);
     }
 
     public boolean isPointInside(PointD point) {
@@ -56,6 +56,31 @@ public class Triangle {
     public boolean isEdge(LineD edge) {
         return (this.a == edge.start || this.b == edge.start || this.c == edge.start)
             && (this.a == edge.end || this.b == edge.end || this.c == edge.end);
+    }
+
+    public static PointD getCircumCenter(PointD a, PointD b, PointD c)
+    {
+        double cx = c.x;
+        double cy = c.y;
+        double ax = a.x - cx;
+        double ay = a.y - cy;
+        double bx = b.x - cx;
+        double by = b.y - cy;
+
+        double denom = 2 * det(ax, ay, bx, by);
+        double numx = det(ay, ax * ax + ay * ay, by, bx * bx + by * by);
+        double numy = det(ax, ax * ax + ay * ay, bx, bx * bx + by * by);
+
+        double ccx = cx - numx / denom;
+        double ccy = cy + numy / denom;
+
+        return new PointD(ccx, ccy);
+    }
+
+
+    private static double det(double m00, double m01, double m10, double m11)
+    {
+        return m00 * m11 - m01 * m10;
     }
 
     public PointD getRemovableVertex(LineD edge) {
@@ -124,10 +149,13 @@ public class Triangle {
         return points;
     }
 
+    public List<PointD> getPointsAsList() {
+        return Arrays.asList(getPointsAsArray());
+    }
+
     private boolean isCCW() {
         return (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y) > 0.;
     }
-
 
     private boolean checkEdge(PointD vertex, LineD edge) {
         return (vertex == edge.start || vertex == edge.end);

@@ -26,15 +26,13 @@ public class DelaunayTriangulator implements Triangulator {
     public void triangulate() {
         triangleSet = new TriangleSet();
 
-        PointD p1 = new PointD(0, 15 * getMaxAxisValue());
-        PointD p2 = new PointD(15 * getMaxAxisValue(), 0);
-        PointD p3 = new PointD(-15 * getMaxAxisValue(), -15 * getMaxAxisValue());
+        PointD p1 = new PointD(-10000, -10000);
+        PointD p2 = new PointD(10000 , -10000);
+        PointD p3 = new PointD(0, 10000);
 
         Triangle veryBigTriangle = new Triangle(p1, p2, p3);
 
         triangleSet.add(veryBigTriangle);
-
-//        Collections.sort(pointSet, new PointDComparatorY());
 
         for (int i = 0; i < pointSet.size(); i++) {
             PointD currentPoint = pointSet.get(i);
@@ -91,10 +89,10 @@ public class DelaunayTriangulator implements Triangulator {
             }
 
         }
-
-        triangleSet.removeByVertex(veryBigTriangle.getA());
-        triangleSet.removeByVertex(veryBigTriangle.getB());
-        triangleSet.removeByVertex(veryBigTriangle.getC());
+          //uncomment for good triangulation, needed for outer triangles to draw voronoi properly
+//        triangleSet.removeByVertex(veryBigTriangle.getA());
+//        triangleSet.removeByVertex(veryBigTriangle.getB());
+//        triangleSet.removeByVertex(veryBigTriangle.getC());
     }
 
 

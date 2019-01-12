@@ -6,6 +6,7 @@ import org.kynosarges.tektosyne.geometry.PointD;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TriangleSet {
 
@@ -39,6 +40,18 @@ public class TriangleSet {
             .filter(element -> element.isEdge(edge) && element!= triangle)
             .findFirst()
             .orElse(null);
+    }
+//TODO: crossing lines and buggy voronoi, maintain order cw/ccw
+    public List<Triangle> findAllNeighbourTriangle(PointD point) {
+        return triangleSet.stream()
+            .filter(element -> element.isVertex(point) )
+            .collect(Collectors.toList());
+    }
+
+    public List<PointD> getAllNeighbouringTriangleCenter(PointD point) {
+        return findAllNeighbourTriangle(point).stream()
+            .map(triangle -> triangle.getCenter())
+            .collect(Collectors.toList());
     }
 
     public Triangle findSharingTriangle(LineD edge) {
