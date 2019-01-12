@@ -169,4 +169,19 @@ public class Triangle {
             ", c=" + c +
             '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Triangle triangle = (Triangle) o;
+        return Objects.equals(a, triangle.a) &&
+            Objects.equals(b, triangle.b) &&
+            Objects.equals(c, triangle.c);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(a, b, c);
+    }
 }

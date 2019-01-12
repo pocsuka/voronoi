@@ -36,8 +36,8 @@ public class VoronoiDialog extends Stage {
         _output.setPrefSize(600, 400);
 
         final VBox root = new VBox( _output);
-        root.setPadding(new Insets(8));
-        root.setSpacing(8);
+//        root.setPadding(new Insets(8));
+//        root.setSpacing(8);
         VBox.setVgrow(_output, Priority.ALWAYS);
 
         setResizable(true);
@@ -49,10 +49,10 @@ public class VoronoiDialog extends Stage {
         this.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                PointD newPoint = new PointD(mouseEvent.getX(), mouseEvent.getY());
+                PointD newPoint = new PointD(mouseEvent.getX(), mouseEvent.getY() + 16);
 //                triangulationPoints.add(newPoint);
                 input.add(newPoint);
-                System.out.println("##########");
+                System.out.println(newPoint);
                 if(input.size() > 3) {
                     draw();
                 }
@@ -96,9 +96,16 @@ public class VoronoiDialog extends Stage {
                 visited.add(vertex);
                 List<PointD> vertices = delaunayTriangulator.getTriangleSet().getAllNeighbouringTriangleCenter(vertex);
 
-                Collections.sort(vertices, new PointDComparatorY());
+                PointD center = GeoUtils.polygonCentroid(vertices.toArray(new PointD[vertices.size()]));
 
-                System.out.println(vertex + ":" + (vertices));
+//                Collections.sort(vertices, new PointSorter(center));
+
+                PointD[] convexHull = GeoUtils.convexHull(vertices.toArray(new PointD[vertices.size()]));
+
+                vertices = Arrays.asList(convexHull);
+
+//                System.out.println(vertex + ":" + (vertices));
+
 
                 Polygon polygon = new Polygon();
                 polygon.getPoints().addAll(toDoubleArray(vertices));
@@ -150,4 +157,6 @@ public class VoronoiDialog extends Stage {
         }
         return coords;
     }
+
+
 }
