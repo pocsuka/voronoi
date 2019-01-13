@@ -29,4 +29,6 @@ repositories {
 
 dependencies {	
 	compile group: 'org.kynosarges', name: 'tektosyne', version: '6.2.0'
+    compile group: 'com.esri.geometry', name: 'esri-geometry-api', version: '2.2.2'
+
 }

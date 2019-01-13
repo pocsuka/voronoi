@@ -1,10 +1,10 @@
 package com.geom.voronoi.gui;
 
 import com.geom.voronoi.data.Triangle;
+import com.geom.voronoi.data.VoronoiRegion;
 import com.geom.voronoi.triangulation.DelaunayTriangulator;
 import com.geom.voronoi.utils.InputReader;
 import javafx.event.EventHandler;
-import javafx.geometry.*;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -23,6 +23,7 @@ public class VoronoiDialog extends Stage {
     private PointD[] _points;
     List<PointD> input = new ArrayList<>();
     InputReader inputReader;
+    List<Double> areas = new ArrayList<>();
 
     public VoronoiDialog() {
         inputReader = new InputReader();
@@ -66,19 +67,14 @@ public class VoronoiDialog extends Stage {
 
         _points = input.toArray(new PointD[input.size()]);
 
-        List<Triangle> triangles = null;
+        List<Triangle> triangles;
 
-        final RectD clip = new RectD(0, 0, _output.getWidth(), _output.getHeight());
-        final VoronoiResults results = Voronoi.findAll(input.toArray(new PointD[input.size()]), clip);
         _output.getChildren().clear();
-
 
         DelaunayTriangulator delaunayTriangulator = new DelaunayTriangulator(input, inputReader.getWidth(), inputReader.getHeight());
         delaunayTriangulator.triangulate();
 
         triangles = delaunayTriangulator.getTriangleSet().getAll();
-
-
 
         HashSet<PointD> visited = new HashSet<>();
 
@@ -90,45 +86,51 @@ public class VoronoiDialog extends Stage {
         visited.add(p2);
         visited.add(p3);
 
+        PointD maxCoord = new PointD(inputReader.getWidth() + 16, inputReader.getHeight() + 16);
+
+        int counter = 0;
+        double sum = 0;
+
         for (Triangle triangle : triangles) {
             for (PointD vertex: triangle.getPointsAsList()) {
                 if (visited.contains(vertex)) continue;
                 visited.add(vertex);
                 List<PointD> vertices = delaunayTriangulator.getTriangleSet().getAllNeighbouringTriangleCenter(vertex);
 
-                PointD center = GeoUtils.polygonCentroid(vertices.toArray(new PointD[vertices.size()]));
+                VoronoiRegion voronoiRegion = new VoronoiRegion(Color.RED, vertices, maxCoord);
 
-//                Collections.sort(vertices, new PointSorter(center));
-
-                PointD[] convexHull = GeoUtils.convexHull(vertices.toArray(new PointD[vertices.size()]));
-
-                vertices = Arrays.asList(convexHull);
-
-//                System.out.println(vertex + ":" + (vertices));
-
+                areas.add(voronoiRegion.getArea());
+                System.out.println(counter + ". area " + voronoiRegion.getArea());
+//                System.out.println(vertex + " : " + (voronoiRegion.getVertices()));
+                counter++;
 
                 Polygon polygon = new Polygon();
-                polygon.getPoints().addAll(toDoubleArray(vertices));
-                polygon.setFill(Color.YELLOW);
-                polygon.setStroke(Color.BLACK);
-                _output.getChildren().add(polygon);
+//              System.out.println(vertex + " : " + (vertices));
+                    polygon.getPoints().addAll(toDoubleArray(voronoiRegion.getVertices()));
+//                polygon.getPoints().addAll(toDoubleArray(vertices));
+                    polygon.setFill(Color.YELLOW);
+                    polygon.setStroke(Color.BLACK);
+                    _output.getChildren().add(polygon);
+//                }
+
+
             }
 
 //            triangulation lines
-            final Line ab = new Line (triangle.getA().x, triangle.getA().y -16, triangle.getB().x, triangle.getB().y -16 );
-
-            ab.setStroke(Color.RED);
-            _output.getChildren().add(ab);
-
-            final Line ac = new Line (triangle.getA().x, triangle.getA().y -16, triangle.getC().x, triangle.getC().y -16 );
-
-            ac.setStroke(Color.RED);
-            _output.getChildren().add(ac);
-
-            final Line bc = new Line (triangle.getB().x, triangle.getB().y -16, triangle.getC().x, triangle.getC().y -16 );
-
-            bc.setStroke(Color.RED);
-            _output.getChildren().add(bc);
+//            final Line ab = new Line (triangle.getA().x, triangle.getA().y -16, triangle.getB().x, triangle.getB().y -16 );
+//
+//            ab.setStroke(Color.RED);
+//            _output.getChildren().add(ab);
+//
+//            final Line ac = new Line (triangle.getA().x, triangle.getA().y -16, triangle.getC().x, triangle.getC().y -16 );
+//
+//            ac.setStroke(Color.RED);
+//            _output.getChildren().add(ac);
+//
+//            final Line bc = new Line (triangle.getB().x, triangle.getB().y -16, triangle.getC().x, triangle.getC().y -16 );
+//
+//            bc.setStroke(Color.RED);
+//            _output.getChildren().add(bc);
 
             //       draw input points
 
@@ -138,8 +140,13 @@ public class VoronoiDialog extends Stage {
 //            shape.setFill(Color.GREEN);
 //            shape.setStroke(Color.GREEN);
 //            _output.getChildren().add(shape);
+//            return;
+
         }
 
+        sum = areas.stream().mapToDouble(area->area).sum();
+
+        System.out.println("sum area: " + sum);
         for (PointD point: input) {
             final Circle shape = new Circle(point.x, point.y-16, diameter / 2);
             shape.setFill(Color.BLACK);
