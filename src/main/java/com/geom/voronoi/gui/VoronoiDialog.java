@@ -45,12 +45,13 @@ public class VoronoiDialog extends Stage {
         setScene(new Scene(root));
         setTitle("Voronoi & Delaunay Test");
         sizeToScene();
-        input = inputReader.getPoints();
+//        input = inputReader.getPoints();
         setOnShown(t -> draw());
         this.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                PointD newPoint = new PointD(mouseEvent.getX(), mouseEvent.getY() + 16);
+                PointD newPoint = new PointD(mouseEvent.getX(), mouseEvent.getY());
+//                PointD newPoint = new PointD(mouseEvent.getX(), mouseEvent.getY() + 16);
 //                triangulationPoints.add(newPoint);
                 input.add(newPoint);
                 System.out.println(newPoint);
@@ -102,17 +103,22 @@ public class VoronoiDialog extends Stage {
                 areas.add(voronoiRegion.getArea());
                 System.out.println(counter + ". area " + voronoiRegion.getArea());
 //                System.out.println(vertex + " : " + (voronoiRegion.getVertices()));
-                counter++;
 
                 Polygon polygon = new Polygon();
 //              System.out.println(vertex + " : " + (vertices));
-                    polygon.getPoints().addAll(toDoubleArray(voronoiRegion.getVertices()));
+                polygon.getPoints().addAll(toDoubleArray(voronoiRegion.getVertices()));
 //                polygon.getPoints().addAll(toDoubleArray(vertices));
-                    polygon.setFill(Color.YELLOW);
-                    polygon.setStroke(Color.BLACK);
-                    _output.getChildren().add(polygon);
+                if (counter < 20) {
+
+                    polygon.setFill(Color.RED);
+                } else {
+                    polygon.setFill(Color.BLUE);
+                }
+                polygon.setStroke(Color.BLACK);
+                _output.getChildren().add(polygon);
 //                }
 
+                counter++;
 
             }
 
@@ -148,7 +154,8 @@ public class VoronoiDialog extends Stage {
 
         System.out.println("sum area: " + sum);
         for (PointD point: input) {
-            final Circle shape = new Circle(point.x, point.y-16, diameter / 2);
+//            final Circle shape = new Circle(point.x, point.y-16, diameter / 2);
+            final Circle shape = new Circle(point.x, point.y, diameter / 2);
             shape.setFill(Color.BLACK);
             shape.setStroke(Color.BLACK);
             _output.getChildren().add(shape);
