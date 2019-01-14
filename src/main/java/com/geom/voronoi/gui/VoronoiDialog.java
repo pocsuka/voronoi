@@ -7,6 +7,7 @@ import com.geom.voronoi.triangulation.DelaunayTriangulator;
 import com.geom.voronoi.utils.Player1InputReader;
 import com.geom.voronoi.utils.Player2InputReader;
 import com.geom.voronoi.state.GameState;
+import com.geom.voronoi.utils.Player2StrategyWriter;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -42,7 +43,6 @@ public class VoronoiDialog extends Stage {
 
         player1InputReader = new Player1InputReader();
         player2InputReader = new Player2InputReader();
-        //TODO: fix path stuff
         player1InputReader.readFile(p1StrategyFileString);
         player2InputReader.readFile(p2StrategyFileString);
 
@@ -131,11 +131,9 @@ public class VoronoiDialog extends Stage {
                 VoronoiRegion voronoiRegion = new VoronoiRegion(color, vertices, maxCoord);
 
                 if (point.getColor().equals(Color.RED)) {
-
                     redAreas.add(voronoiRegion.getArea());
                 } else {
                     blueAreas.add(voronoiRegion.getArea());
-
                 }
 
 
@@ -176,6 +174,12 @@ public class VoronoiDialog extends Stage {
 
         double redAreaSum = redAreas.stream().mapToDouble(area->area).sum();
         double blueAreaSum = blueAreas.stream().mapToDouble(area->area).sum();
+
+        // A bit hacky, allows to write out p2 strategy
+        if (blueAreaSum == 0) {
+            Player2StrategyWriter psw = new Player2StrategyWriter(triangles, player1InputReader.getRoundsOfPlayer2(), player1InputReader.getWidth(), player1InputReader.getHeight());
+            psw.writePlayer2Strategy("resources/p2_strategy_out.txt");
+        }
 
         double total = redAreaSum + blueAreaSum;
 

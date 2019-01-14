@@ -75,7 +75,7 @@ public class VoronoiApplication extends Application {
     }
 
     private void updateWelcomeMessage() {
-        message.setText("Select a mode to play the game.\nP1: " + p1StrategyFileString + "\nP2: " + p2StrategyFileString);
+        message.setText("Select a mode to play the game.\nP1: " + p1StrategyFileString + "\nP2: " + p2StrategyFileString + "\n\nTo write a strategy, open the file 'p2writestrategy.txt'");
     }
 
     private void setPlayer2StrategyFile() {
