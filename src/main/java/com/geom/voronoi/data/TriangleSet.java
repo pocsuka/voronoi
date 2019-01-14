@@ -44,7 +44,7 @@ public class TriangleSet {
 //TODO: crossing lines and buggy voronoi, maintain order cw/ccw
     public List<Triangle> findAllNeighbourTriangle(PointD point) {
         return triangleSet.stream()
-            .filter(element -> element.isVertex(point) )
+            .filter(element -> element.isVertex(point))
             .collect(Collectors.toList());
     }
 

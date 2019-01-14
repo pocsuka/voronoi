@@ -1,6 +1,8 @@
 package com.geom.voronoi.data;
 
 import com.esri.core.geometry.*;
+import com.geom.voronoi.gui.VoronoiApplication;
+import com.geom.voronoi.gui.VoronoiDialog;
 import javafx.scene.paint.Color;
 import org.kynosarges.tektosyne.geometry.GeoUtils;
 
@@ -9,20 +11,25 @@ import org.kynosarges.tektosyne.geometry.PointD;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class VoronoiRegion {
 
     private Color color;
-    private List<PointD> vertices;
+    private List<Vertex> vertices;
     private PointD maxCoord;
+    private Vertex playerPoint;
 
     public VoronoiRegion(Color color, List<PointD> vertices, PointD maxCoord) {
         this.color = color;
         this.maxCoord = maxCoord;
+        try  {
+            PointD[] convexHull = GeoUtils.convexHull(vertices.toArray(new PointD[vertices.size()]));
+            this.vertices = convertPointDArrayToVoronoiVertexList(convexHull);
+            clip();
+        } catch (NullPointerException e) {
 
-        PointD[] convexHull = GeoUtils.convexHull(vertices.toArray(new PointD[vertices.size()]));
-        this.vertices = Arrays.asList(convexHull);
-        clip();
+        }
     }
 
     public void clip() {
@@ -58,41 +65,60 @@ public class VoronoiRegion {
         this.color = color;
     }
 
-    public List<PointD> getVertices() {
+    public List<Vertex> getVertices() {
         return vertices;
     }
 
-    public void setVertices(List<PointD> vertices) {
+    public void setVertices(List<Vertex> vertices) {
         this.vertices = vertices;
     }
 
     public double getArea() {
-        return Math.abs(GeoUtils.polygonArea(vertices.toArray(new PointD[vertices.size()])));
+
+        double area = 0;
+
+        try {
+            area = Math.abs(GeoUtils.polygonArea(VoronoiDialog.toPointDList(vertices).toArray(new PointD[vertices.size()])));
+        }catch (IllegalArgumentException e) {
+            System.out.println("##################################");
+        }
+
+        return area;
     }
 
-    private Polygon convertToPolygon(List<PointD> vertices) {
+    private Polygon convertToPolygon(List<Vertex> vertices) {
         Polygon polygon = new Polygon();
 
-        polygon.startPath(vertices.get(0).x, vertices.get(0).y);
+        polygon.startPath(vertices.get(0).getLocation().x, vertices.get(0).getLocation().y);
 
         for (int i = 1; i < vertices.size(); i++) {
-            polygon.lineTo(vertices.get(i).x, vertices.get(i).y);
+            polygon.lineTo(vertices.get(i).getLocation().x, vertices.get(i).getLocation().y);
         }
 
         return  polygon;
     }
 
-    private List<PointD> convertToPointList(Polygon polygon) {
-        List<PointD> points = new ArrayList<>();
+    private List<Vertex> convertToPointList(Polygon polygon) {
+        List<Vertex> points = new ArrayList<>();
 
         Point2D[] polyPoints = polygon.getCoordinates2D();
 
         for (int i = 0; i < polyPoints.length; i++) {
             PointD p = new PointD(polyPoints[i].x, polyPoints[i].y);
-            points.add(p);
+            points.add(new Vertex(p, this.color));
         }
 
         return  points;
+    }
+
+    private List<Vertex> convertPointDArrayToVoronoiVertexList(PointD[] vertices) {
+        return Arrays.stream(vertices)
+            .map(point -> createVoronoiVertexInstance(point))
+            .collect(Collectors.toList());
+    }
+
+    private Vertex createVoronoiVertexInstance(PointD p) {
+        return new Vertex(p, this.color);
     }
 
 }

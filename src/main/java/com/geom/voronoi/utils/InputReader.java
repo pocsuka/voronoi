@@ -8,13 +8,14 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class InputReader {
-    private double height;
-    private double width;
-    private double RoundsOfPlayer1;
-    private double RoundsOfPlayer2;
+    private int height;
+    private int width;
+    private int roundsOfPlayer1;
+    private int roundsOfPlayer2;
 
 
     private List<PointD> points;
@@ -23,24 +24,24 @@ public class InputReader {
         this.points = new ArrayList<>();
     }
 
-    public double getHeight() {
+    public int getHeight() {
         return height;
     }
 
-    public double getWidth() {
+    public int getWidth() {
         return width;
     }
 
-    public double getRoundsOfPlayer1() {
-        return RoundsOfPlayer1;
+    public int getRoundsOfPlayer1() {
+        return roundsOfPlayer1;
     }
 
-    public double getRoundsOfPlayer2() {
-        return RoundsOfPlayer2;
+    public int getRoundsOfPlayer2() {
+        return roundsOfPlayer2;
     }
 
     public List<PointD> getPoints() {
-        return points;
+        return points.stream().distinct().collect(Collectors.toList());
     }
 
     public void readFile(String path) {
@@ -49,10 +50,10 @@ public class InputReader {
 
             String[] splitted = bufferedReader.readLine().split(",");
 
-            this.width = Double.parseDouble(splitted[0]);
-            this.height = Double.parseDouble(splitted[1]);
-            this.RoundsOfPlayer1 = Double.parseDouble(splitted[2]);
-            this.RoundsOfPlayer2 = Double.parseDouble(splitted[3]);
+            this.width = Integer.parseInt(splitted[0].trim());
+            this.height = Integer.parseInt(splitted[1].trim());
+            this.roundsOfPlayer1 = Integer.parseInt(splitted[2].trim());
+            this.roundsOfPlayer2 = Integer.parseInt(splitted[3].trim());
 
             Stream<String> lines = bufferedReader.lines();
             lines.forEach(line -> createPoint(line));

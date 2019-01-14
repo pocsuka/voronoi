@@ -2,8 +2,10 @@ package com.geom.voronoi.gui;
 
 import com.geom.voronoi.data.Triangle;
 import com.geom.voronoi.data.VoronoiRegion;
+import com.geom.voronoi.data.Vertex;
 import com.geom.voronoi.triangulation.DelaunayTriangulator;
 import com.geom.voronoi.utils.InputReader;
+import com.geom.voronoi.state.GameState;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
@@ -16,25 +18,29 @@ import org.kynosarges.tektosyne.geometry.*;
 
 import java.util.*;
 
-
 public class VoronoiDialog extends Stage {
 
     private final Pane _output = new Pane();
     private PointD[] _points;
-    List<PointD> input = new ArrayList<>();
+    List<Vertex> input = new ArrayList<>();
     InputReader inputReader;
     List<Double> areas = new ArrayList<>();
+    int counter = 0;
+
+    private GameState gameState;
 
     public VoronoiDialog() {
         inputReader = new InputReader();
         inputReader.readFile("c:/git/voronoi/src/main/resources/circle10.txt");
 
+        gameState = new GameState(inputReader.getRoundsOfPlayer1(), inputReader.getRoundsOfPlayer2());
+        gameState.setRedPlayer(true);
         initOwner(Global.primaryStage());
         initModality(Modality.APPLICATION_MODAL);
         initStyle(StageStyle.DECORATED);
 
        Global.clipChildren(_output);
-        _output.setPrefSize(600, 400);
+        _output.setPrefSize(inputReader.getWidth(), inputReader.getHeight());
 
         final VBox root = new VBox( _output);
 //        root.setPadding(new Insets(8));
@@ -45,7 +51,7 @@ public class VoronoiDialog extends Stage {
         setScene(new Scene(root));
         setTitle("Voronoi & Delaunay Test");
         sizeToScene();
-//        input = inputReader.getPoints();
+        input = convertPointDListToVertexList(inputReader.getPoints());
         setOnShown(t -> draw());
         this.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
             @Override
@@ -53,7 +59,14 @@ public class VoronoiDialog extends Stage {
                 PointD newPoint = new PointD(mouseEvent.getX(), mouseEvent.getY());
 //                PointD newPoint = new PointD(mouseEvent.getX(), mouseEvent.getY() + 16);
 //                triangulationPoints.add(newPoint);
-                input.add(newPoint);
+                Color color = gameState.isRedPlayer() ? Color.RED : Color.BLUE;
+
+                if (counter == gameState.getRedPlayerRounds()) {
+                    gameState.setRedPlayer(false);
+                }
+                counter++;
+
+                input.add(new Vertex(newPoint, color));
                 System.out.println(newPoint);
                 if(input.size() > 3) {
                     draw();
@@ -64,9 +77,7 @@ public class VoronoiDialog extends Stage {
 
 
     private void draw() {
-        final double diameter = 4;
-
-        _points = input.toArray(new PointD[input.size()]);
+        final double diameter = 8;
 
         List<Triangle> triangles;
 
@@ -89,36 +100,33 @@ public class VoronoiDialog extends Stage {
 
         PointD maxCoord = new PointD(inputReader.getWidth() + 16, inputReader.getHeight() + 16);
 
-        int counter = 0;
         double sum = 0;
 
         for (Triangle triangle : triangles) {
             for (PointD vertex: triangle.getPointsAsList()) {
+
                 if (visited.contains(vertex)) continue;
+
                 visited.add(vertex);
                 List<PointD> vertices = delaunayTriangulator.getTriangleSet().getAllNeighbouringTriangleCenter(vertex);
 
-                VoronoiRegion voronoiRegion = new VoronoiRegion(Color.RED, vertices, maxCoord);
+                int index = (GeoUtils.nearestPoint(toPointDList(input), vertex));
 
-                areas.add(voronoiRegion.getArea());
-                System.out.println(counter + ". area " + voronoiRegion.getArea());
+                Vertex point = input.get(index);
+
+                Color color = point.getColor().equals(Color.RED) ? Color.SALMON : Color.STEELBLUE;
+
+                VoronoiRegion voronoiRegion = new VoronoiRegion(color, vertices, maxCoord);
+
+//                areas.add(voronoiRegion.getArea());
+//                System.out.println("area " + voronoiRegion.getArea());
 //                System.out.println(vertex + " : " + (voronoiRegion.getVertices()));
 
                 Polygon polygon = new Polygon();
-//              System.out.println(vertex + " : " + (vertices));
                 polygon.getPoints().addAll(toDoubleArray(voronoiRegion.getVertices()));
-//                polygon.getPoints().addAll(toDoubleArray(vertices));
-                if (counter < 20) {
-
-                    polygon.setFill(Color.RED);
-                } else {
-                    polygon.setFill(Color.BLUE);
-                }
+                polygon.setFill(voronoiRegion.getColor());
                 polygon.setStroke(Color.BLACK);
                 _output.getChildren().add(polygon);
-//                }
-
-                counter++;
 
             }
 
@@ -153,24 +161,44 @@ public class VoronoiDialog extends Stage {
         sum = areas.stream().mapToDouble(area->area).sum();
 
         System.out.println("sum area: " + sum);
-        for (PointD point: input) {
-//            final Circle shape = new Circle(point.x, point.y-16, diameter / 2);
-            final Circle shape = new Circle(point.x, point.y, diameter / 2);
-            shape.setFill(Color.BLACK);
-            shape.setStroke(Color.BLACK);
-            _output.getChildren().add(shape);
-        }
+//        for (Vertex point: input) {
+//            final Circle shape = new Circle(point.getLocation().x, point.getLocation().y, diameter / 2);
+//            shape.setFill(point.getColor());
+//            _output.getChildren().add(shape);
+//        }
 
     }
 
-    private List<Double> toDoubleArray(List<PointD> vertices) {
+    private List<Double> toDoubleArray(List<Vertex> vertices) {
         List<Double> coords = new ArrayList<>();
         for (int i = 0; i < vertices.size(); i++) {
-            coords.add(vertices.get(i).x-16);
-            coords.add(vertices.get(i).y-16);
+            coords.add(vertices.get(i).getLocation().x);
+            coords.add(vertices.get(i).getLocation().y);
         }
         return coords;
     }
 
+    public static List<PointD> toPointDList(List<Vertex> vertices) {
+        List<PointD> coords = new ArrayList<>();
+        for (int i = 0; i < vertices.size(); i++) {
+            coords.add(new PointD(vertices.get(i).getLocation().x, vertices.get(i).getLocation().y));
+        }
+        return coords;
+    }
+
+    private List<Vertex> convertPointDListToVertexList(List<PointD> vertices) {
+
+        List<Vertex> converted = new ArrayList<>();
+
+        for (int i = 0; i < vertices.size(); i++){
+            if (i < vertices.size() / 2) {
+
+                converted.add(new Vertex(vertices.get(i),Color.RED));
+            } else {
+                converted.add(new Vertex(vertices.get(i),Color.BLUE));
+            }
+        }
+        return  converted;
+    }
 
 }

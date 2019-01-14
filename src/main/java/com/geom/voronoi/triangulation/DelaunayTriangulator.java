@@ -3,6 +3,7 @@ package com.geom.voronoi.triangulation;
 import com.geom.voronoi.data.Triangle;
 
 import com.geom.voronoi.data.TriangleSet;
+import com.geom.voronoi.data.Vertex;
 import org.kynosarges.tektosyne.geometry.LineD;
 import org.kynosarges.tektosyne.geometry.PointD;
 
@@ -11,12 +12,12 @@ import java.util.List;
 
 public class DelaunayTriangulator implements Triangulator {
 
-    private List<PointD> pointSet;
+    private List<Vertex> pointSet;
     private TriangleSet triangleSet;
     private double areaWidth;
     private double areaHeight;
 
-    public DelaunayTriangulator(List<PointD> pointSet, double areaWidth, double areaHeight) {
+    public DelaunayTriangulator(List<Vertex> pointSet, double areaWidth, double areaHeight) {
         this.pointSet = pointSet;
         this.areaWidth = areaWidth;
         this.areaHeight = areaHeight;
@@ -35,7 +36,7 @@ public class DelaunayTriangulator implements Triangulator {
         triangleSet.add(veryBigTriangle);
 
         for (int i = 0; i < pointSet.size(); i++) {
-            PointD currentPoint = pointSet.get(i);
+            PointD currentPoint = pointSet.get(i).getLocation();
 
             Triangle triangle = triangleSet.getTriangleThatContainsPoint(currentPoint);
 
