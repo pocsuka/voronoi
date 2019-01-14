@@ -2,10 +2,10 @@ package com.geom.voronoi.utils;
 
 import com.geom.voronoi.data.Triangle;
 import com.geom.voronoi.data.Vertex;
-import com.geom.voronoi.p2strategies.P2RandomStrategy;
+import com.geom.voronoi.p2strategies.P2GreedyStrategy;
+import com.geom.voronoi.p2strategies.P2GridStrategy;
 import com.geom.voronoi.p2strategies.P2Strategy;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,7 +25,9 @@ public class Player2StrategyWriter {
         this.triangles = triangles;
         this.width = width;
         this.height = height;
-        this.p2Strategy = new P2RandomStrategy();
+//        this.p2Strategy = new P2RandomStrategy();
+//        this.p2Strategy = new P2GridStrategy();
+        this.p2Strategy = new P2GreedyStrategy();
     }
 
     public void writePlayer2Strategy(String path) {
