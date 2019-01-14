@@ -9,6 +9,7 @@ import com.geom.voronoi.utils.Player2InputReader;
 import com.geom.voronoi.state.GameState;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.*;
@@ -23,16 +24,22 @@ import java.util.*;
 public class VoronoiDialog extends Stage {
 
     private final Pane _output = new Pane();
+    private final Pane infos = new Pane();
     private final Player2InputReader player2InputReader;
     private final Player1InputReader player1InputReader;
     List<Double> redAreas = new ArrayList<>();
     List<Double> blueAreas = new ArrayList<>();
     List<Vertex> input = new ArrayList<>();
     private GameState gameState;
+    Label standing;
 
     int counter = 0;
 
     public VoronoiDialog() {
+
+        standing = new Label("Red: % vs Blue: % ");
+        standing.setPrefSize(300,30);
+
         player1InputReader = new Player1InputReader();
         player2InputReader = new Player2InputReader();
         //TODO: fix path stuff
@@ -45,16 +52,19 @@ public class VoronoiDialog extends Stage {
         initModality(Modality.APPLICATION_MODAL);
         initStyle(StageStyle.DECORATED);
 
-       Global.clipChildren(_output);
+//       Global.clipChildren(_output);
         _output.setPrefSize(player1InputReader.getWidth(), player1InputReader.getHeight());
 
-        final VBox root = new VBox( _output);
-        VBox.setVgrow(_output, Priority.ALWAYS);
+        final VBox root = new VBox(infos, _output);
+//        VBox.setVgrow(_output, Priority.ALWAYS);
 
         setResizable(true);
         setScene(new Scene(root));
         setTitle("Voronoi & Delaunay Test");
         sizeToScene();
+
+        infos.getChildren().addAll(standing);
+
         input = convertPointDListToVertexList(player1InputReader.getPoints(),Color.RED);
         List<Vertex> inputp2 = convertPointDListToVertexList(player2InputReader.getPoints(),Color.BLUE);
         input.addAll(inputp2);
@@ -75,7 +85,7 @@ public class VoronoiDialog extends Stage {
                 input.add(new Vertex(newPoint, color));
                 System.out.println(newPoint);
                 if(input.size() > 3) {
-                    draw();
+//                    draw();
                 }
             }
         });
@@ -172,7 +182,12 @@ public class VoronoiDialog extends Stage {
         System.out.println("red area: " + (redAreaSum/total) * 100);
         System.out.println("blue area: " + (blueAreaSum/total)* 100);
 
+        String red = String.format(String.format("Red: %g", (redAreaSum/total) * 100));
+        red = red.concat("%");
+        String blue = String.format(String.format("        Blue: %g", (blueAreaSum/total) * 100));
+        blue = blue.concat("%");
 
+        standing.setText(red + blue);
 
         for (Vertex point: input) {
             final Circle shape = new Circle(point.getLocation().x, point.getLocation().y, diameter / 2);
