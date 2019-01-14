@@ -24,7 +24,8 @@ public class VoronoiDialog extends Stage {
     private PointD[] _points;
     List<Vertex> input = new ArrayList<>();
     InputReader inputReader;
-    List<Double> areas = new ArrayList<>();
+    List<Double> redAreas = new ArrayList<>();
+    List<Double> blueAreas = new ArrayList<>();
     int counter = 0;
 
     private GameState gameState;
@@ -118,9 +119,14 @@ public class VoronoiDialog extends Stage {
 
                 VoronoiRegion voronoiRegion = new VoronoiRegion(color, vertices, maxCoord);
 
-//                areas.add(voronoiRegion.getArea());
-//                System.out.println("area " + voronoiRegion.getArea());
-//                System.out.println(vertex + " : " + (voronoiRegion.getVertices()));
+                if (point.getColor().equals(Color.RED)) {
+
+                    redAreas.add(voronoiRegion.getArea());
+                } else {
+                    blueAreas.add(voronoiRegion.getArea());
+
+                }
+
 
                 Polygon polygon = new Polygon();
                 polygon.getPoints().addAll(toDoubleArray(voronoiRegion.getVertices()));
@@ -158,9 +164,16 @@ public class VoronoiDialog extends Stage {
 
         }
 
-        sum = areas.stream().mapToDouble(area->area).sum();
+        double redAreaSum = redAreas.stream().mapToDouble(area->area).sum();
+        double blueAreaSum = blueAreas.stream().mapToDouble(area->area).sum();
 
-        System.out.println("sum area: " + sum);
+        double total = redAreaSum + blueAreaSum;
+
+        System.out.println("red area: " + (redAreaSum/total) * 100);
+        System.out.println("blue area: " + (blueAreaSum/total)* 100);
+
+
+
 //        for (Vertex point: input) {
 //            final Circle shape = new Circle(point.getLocation().x, point.getLocation().y, diameter / 2);
 //            shape.setFill(point.getColor());
@@ -169,11 +182,11 @@ public class VoronoiDialog extends Stage {
 
     }
 
-    private List<Double> toDoubleArray(List<Vertex> vertices) {
+    private List<Double> toDoubleArray(List<PointD> vertices) {
         List<Double> coords = new ArrayList<>();
         for (int i = 0; i < vertices.size(); i++) {
-            coords.add(vertices.get(i).getLocation().x);
-            coords.add(vertices.get(i).getLocation().y);
+            coords.add(vertices.get(i).x);
+            coords.add(vertices.get(i).y);
         }
         return coords;
     }
@@ -192,7 +205,6 @@ public class VoronoiDialog extends Stage {
 
         for (int i = 0; i < vertices.size(); i++){
             if (i < vertices.size() / 2) {
-
                 converted.add(new Vertex(vertices.get(i),Color.RED));
             } else {
                 converted.add(new Vertex(vertices.get(i),Color.BLUE));
