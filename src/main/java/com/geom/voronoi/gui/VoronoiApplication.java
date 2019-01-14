@@ -44,7 +44,7 @@ public class VoronoiApplication extends Application {
         );
 
         final Menu geoMenu = createMenu("_Modes",
-            createMenuItem("_Human vs Human", t -> new VoronoiDialog().showAndWait(),
+            createMenuItem("_Input file mode", t -> new VoronoiDialog().showAndWait(),
                 null)
         );
 
