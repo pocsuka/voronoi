@@ -4,7 +4,8 @@ import com.geom.voronoi.data.Triangle;
 import com.geom.voronoi.data.VoronoiRegion;
 import com.geom.voronoi.data.Vertex;
 import com.geom.voronoi.triangulation.DelaunayTriangulator;
-import com.geom.voronoi.utils.InputReader;
+import com.geom.voronoi.utils.Player1InputReader;
+import com.geom.voronoi.utils.Player2InputReader;
 import com.geom.voronoi.state.GameState;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -18,30 +19,34 @@ import org.kynosarges.tektosyne.geometry.*;
 
 import java.util.*;
 
+
 public class VoronoiDialog extends Stage {
 
     private final Pane _output = new Pane();
-    private PointD[] _points;
-    List<Vertex> input = new ArrayList<>();
-    InputReader inputReader;
+    private final Player2InputReader player2InputReader;
+    private final Player1InputReader player1InputReader;
     List<Double> redAreas = new ArrayList<>();
     List<Double> blueAreas = new ArrayList<>();
-    int counter = 0;
-
+    List<Vertex> input = new ArrayList<>();
     private GameState gameState;
 
-    public VoronoiDialog() {
-        inputReader = new InputReader();
-        inputReader.readFile("c:/git/voronoi/src/main/resources/circle10.txt");
+    int counter = 0;
 
-        gameState = new GameState(inputReader.getRoundsOfPlayer1(), inputReader.getRoundsOfPlayer2());
+    public VoronoiDialog() {
+        player1InputReader = new Player1InputReader();
+        player2InputReader = new Player2InputReader();
+        //TODO: fix path stuff
+        player1InputReader.readFile("C:\\git\\voronoi\\src\\main\\resources\\circle10.txt");
+        player2InputReader.readFile("C:\\git\\voronoi\\src\\main\\resources\\p2circle10.txt");
+
+        gameState = new GameState(player1InputReader.getRoundsOfPlayer1(), player1InputReader.getRoundsOfPlayer2());
         gameState.setRedPlayer(true);
         initOwner(Global.primaryStage());
         initModality(Modality.APPLICATION_MODAL);
         initStyle(StageStyle.DECORATED);
 
        Global.clipChildren(_output);
-        _output.setPrefSize(inputReader.getWidth(), inputReader.getHeight());
+        _output.setPrefSize(player1InputReader.getWidth(), player1InputReader.getHeight());
 
         final VBox root = new VBox( _output);
 //        root.setPadding(new Insets(8));
@@ -52,7 +57,9 @@ public class VoronoiDialog extends Stage {
         setScene(new Scene(root));
         setTitle("Voronoi & Delaunay Test");
         sizeToScene();
-        input = convertPointDListToVertexList(inputReader.getPoints());
+        input = convertPointDListToVertexList(player1InputReader.getPoints(),Color.RED);
+        List<Vertex> inputp2 = convertPointDListToVertexList(player2InputReader.getPoints(),Color.BLUE);
+        input.addAll(inputp2);
         setOnShown(t -> draw());
         this.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
             @Override
@@ -84,7 +91,7 @@ public class VoronoiDialog extends Stage {
 
         _output.getChildren().clear();
 
-        DelaunayTriangulator delaunayTriangulator = new DelaunayTriangulator(input, inputReader.getWidth(), inputReader.getHeight());
+        DelaunayTriangulator delaunayTriangulator = new DelaunayTriangulator(input, player1InputReader.getWidth(), player1InputReader.getHeight());
         delaunayTriangulator.triangulate();
 
         triangles = delaunayTriangulator.getTriangleSet().getAll();
@@ -99,15 +106,14 @@ public class VoronoiDialog extends Stage {
         visited.add(p2);
         visited.add(p3);
 
-        PointD maxCoord = new PointD(inputReader.getWidth() + 16, inputReader.getHeight() + 16);
+        PointD maxCoord = new PointD(player1InputReader.getWidth() + 16, player1InputReader.getHeight() + 16);
 
+        int counter = 0;
         double sum = 0;
 
         for (Triangle triangle : triangles) {
             for (PointD vertex: triangle.getPointsAsList()) {
-
                 if (visited.contains(vertex)) continue;
-
                 visited.add(vertex);
                 List<PointD> vertices = delaunayTriangulator.getTriangleSet().getAllNeighbouringTriangleCenter(vertex);
 
@@ -156,11 +162,10 @@ public class VoronoiDialog extends Stage {
 
 
             //voronoi verticies
-//            final Circle shape = new Circle(triangle.getCenter().x, triangle.getCenter().y-16, diameter / 2);
+//            final Circle shape = new Circle(triangle.getCenter().x, triangle.getCenter().y, diameter / 2);
 //            shape.setFill(Color.GREEN);
 //            shape.setStroke(Color.GREEN);
 //            _output.getChildren().add(shape);
-//            return;
 
         }
 
@@ -174,11 +179,11 @@ public class VoronoiDialog extends Stage {
 
 
 
-//        for (Vertex point: input) {
-//            final Circle shape = new Circle(point.getLocation().x, point.getLocation().y, diameter / 2);
-//            shape.setFill(point.getColor());
-//            _output.getChildren().add(shape);
-//        }
+        for (Vertex point: input) {
+            final Circle shape = new Circle(point.getLocation().x, point.getLocation().y, diameter / 2);
+            shape.setFill(point.getColor());
+            _output.getChildren().add(shape);
+        }
 
     }
 
@@ -199,16 +204,12 @@ public class VoronoiDialog extends Stage {
         return coords;
     }
 
-    private List<Vertex> convertPointDListToVertexList(List<PointD> vertices) {
+    private List<Vertex> convertPointDListToVertexList(List<PointD> vertices, Color color) {
 
         List<Vertex> converted = new ArrayList<>();
 
         for (int i = 0; i < vertices.size(); i++){
-            if (i < vertices.size() / 2) {
-                converted.add(new Vertex(vertices.get(i),Color.RED));
-            } else {
-                converted.add(new Vertex(vertices.get(i),Color.BLUE));
-            }
+            converted.add(new Vertex(vertices.get(i), color));
         }
         return  converted;
     }
