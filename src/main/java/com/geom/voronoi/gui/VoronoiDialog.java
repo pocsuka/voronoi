@@ -49,8 +49,6 @@ public class VoronoiDialog extends Stage {
         _output.setPrefSize(player1InputReader.getWidth(), player1InputReader.getHeight());
 
         final VBox root = new VBox( _output);
-//        root.setPadding(new Insets(8));
-//        root.setSpacing(8);
         VBox.setVgrow(_output, Priority.ALWAYS);
 
         setResizable(true);
@@ -107,9 +105,6 @@ public class VoronoiDialog extends Stage {
         visited.add(p3);
 
         PointD maxCoord = new PointD(player1InputReader.getWidth() + 16, player1InputReader.getHeight() + 16);
-
-        int counter = 0;
-        double sum = 0;
 
         for (Triangle triangle : triangles) {
             for (PointD vertex: triangle.getPointsAsList()) {
