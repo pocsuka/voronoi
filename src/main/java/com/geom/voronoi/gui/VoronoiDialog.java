@@ -43,8 +43,8 @@ public class VoronoiDialog extends Stage {
         player1InputReader = new Player1InputReader();
         player2InputReader = new Player2InputReader();
         //TODO: fix path stuff
-        player1InputReader.readFile("C:\\git\\voronoi\\src\\main\\resources\\circle10.txt");
-        player2InputReader.readFile("C:\\git\\voronoi\\src\\main\\resources\\p2circle10.txt");
+        player1InputReader.readFile("resources\\circle10.txt");
+        player2InputReader.readFile("resources\\p2circle10.txt");
 
         gameState = new GameState(player1InputReader.getRoundsOfPlayer1(), player1InputReader.getRoundsOfPlayer2());
         gameState.setRedPlayer(true);
