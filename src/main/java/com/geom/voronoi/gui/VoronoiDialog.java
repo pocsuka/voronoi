@@ -3,7 +3,8 @@ package com.geom.voronoi.gui;
 import com.geom.voronoi.data.Triangle;
 import com.geom.voronoi.data.VoronoiRegion;
 import com.geom.voronoi.triangulation.DelaunayTriangulator;
-import com.geom.voronoi.utils.InputReader;
+import com.geom.voronoi.utils.Player1InputReader;
+import com.geom.voronoi.utils.Player2InputReader;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
@@ -20,14 +21,17 @@ import java.util.*;
 public class VoronoiDialog extends Stage {
 
     private final Pane _output = new Pane();
+    private final Player2InputReader player2InputReader;
     private PointD[] _points;
     List<PointD> input = new ArrayList<>();
-    InputReader inputReader;
+    Player1InputReader player1InputReader;
     List<Double> areas = new ArrayList<>();
 
     public VoronoiDialog() {
-        inputReader = new InputReader();
-        inputReader.readFile("c:/git/voronoi/src/main/resources/circle10.txt");
+        player1InputReader = new Player1InputReader();
+        player2InputReader = new Player2InputReader();
+        player1InputReader.readFile("circle10.txt");
+        player2InputReader.readFile("p2circle10.txt");
 
         initOwner(Global.primaryStage());
         initModality(Modality.APPLICATION_MODAL);
@@ -45,7 +49,10 @@ public class VoronoiDialog extends Stage {
         setScene(new Scene(root));
         setTitle("Voronoi & Delaunay Test");
         sizeToScene();
-//        input = inputReader.getPoints();
+        input = player1InputReader.getPoints();
+        List<PointD> inputp2 = player2InputReader.getPoints();
+        input.addAll(inputp2);
+
         setOnShown(t -> draw());
         this.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
             @Override
@@ -72,7 +79,7 @@ public class VoronoiDialog extends Stage {
 
         _output.getChildren().clear();
 
-        DelaunayTriangulator delaunayTriangulator = new DelaunayTriangulator(input, inputReader.getWidth(), inputReader.getHeight());
+        DelaunayTriangulator delaunayTriangulator = new DelaunayTriangulator(input, player1InputReader.getWidth(), player1InputReader.getHeight());
         delaunayTriangulator.triangulate();
 
         triangles = delaunayTriangulator.getTriangleSet().getAll();
@@ -87,7 +94,7 @@ public class VoronoiDialog extends Stage {
         visited.add(p2);
         visited.add(p3);
 
-        PointD maxCoord = new PointD(inputReader.getWidth() + 16, inputReader.getHeight() + 16);
+        PointD maxCoord = new PointD(player1InputReader.getWidth() + 16, player1InputReader.getHeight() + 16);
 
         int counter = 0;
         double sum = 0;
@@ -108,7 +115,7 @@ public class VoronoiDialog extends Stage {
 //              System.out.println(vertex + " : " + (vertices));
                 polygon.getPoints().addAll(toDoubleArray(voronoiRegion.getVertices()));
 //                polygon.getPoints().addAll(toDoubleArray(vertices));
-                if (counter < 20) {
+                if (counter < player1InputReader.getRoundsOfPlayer1()) {
 
                     polygon.setFill(Color.RED);
                 } else {

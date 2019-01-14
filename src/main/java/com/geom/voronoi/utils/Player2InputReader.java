@@ -7,32 +7,17 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class InputReader {
-    private double height;
-    private double width;
-    private double RoundsOfPlayer1;
+public class Player2InputReader {
     private double RoundsOfPlayer2;
-
 
     private List<PointD> points;
 
-    public InputReader( ) {
+    public Player2InputReader( ) {
         this.points = new ArrayList<>();
-    }
-
-    public double getHeight() {
-        return height;
-    }
-
-    public double getWidth() {
-        return width;
-    }
-
-    public double getRoundsOfPlayer1() {
-        return RoundsOfPlayer1;
     }
 
     public double getRoundsOfPlayer2() {
@@ -46,13 +31,7 @@ public class InputReader {
     public void readFile(String path) {
         try {
             BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(path));
-
-            String[] splitted = bufferedReader.readLine().split(",");
-
-            this.width = Double.parseDouble(splitted[0]);
-            this.height = Double.parseDouble(splitted[1]);
-            this.RoundsOfPlayer1 = Double.parseDouble(splitted[2]);
-            this.RoundsOfPlayer2 = Double.parseDouble(splitted[3]);
+            this.RoundsOfPlayer2 = Double.parseDouble(bufferedReader.readLine());
 
             Stream<String> lines = bufferedReader.lines();
             lines.forEach(line -> createPoint(line));
@@ -62,6 +41,7 @@ public class InputReader {
             e.printStackTrace();
         }
 
+        Collections.shuffle(points);
     }
     private void createPoint(String line) {
         String[] splitted = line.split(",");
