@@ -35,7 +35,7 @@ public class VoronoiDialog extends Stage {
 
     int counter = 0;
 
-    public VoronoiDialog() {
+    public VoronoiDialog(String p1StrategyFileString, String p2StrategyFileString) {
 
         standing = new Label("Red: % vs Blue: % ");
         standing.setPrefSize(300,30);
@@ -43,8 +43,8 @@ public class VoronoiDialog extends Stage {
         player1InputReader = new Player1InputReader();
         player2InputReader = new Player2InputReader();
         //TODO: fix path stuff
-        player1InputReader.readFile("resources\\circle10.txt");
-        player2InputReader.readFile("resources\\p2circle10.txt");
+        player1InputReader.readFile(p1StrategyFileString);
+        player2InputReader.readFile(p2StrategyFileString);
 
         gameState = new GameState(player1InputReader.getRoundsOfPlayer1(), player1InputReader.getRoundsOfPlayer2());
         gameState.setRedPlayer(true);
