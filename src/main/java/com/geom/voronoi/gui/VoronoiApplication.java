@@ -23,8 +23,8 @@ public class VoronoiApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        p1StrategyFileString = "C:\\git\\voronoi\\src\\main\\resources\\circle10.txt";
-        p2StrategyFileString = "C:\\git\\voronoi\\src\\main\\resources\\p2circle10.txt";
+        p1StrategyFileString = "C:\\voronoi\\inputs\\circle10.txt";
+        p2StrategyFileString = "C:\\voronoi\\inputs\\p2circle10.txt";
 //
 //        p1StrategyFileString = "./resources/circle10.txt";
 //        p2StrategyFileString = "./resources/p2circle10.txt";
@@ -69,7 +69,7 @@ public class VoronoiApplication extends Application {
 
     private void setPlayer1StrategyFile() {
         FileChooser fc = new FileChooser();
-        fc.setInitialDirectory(new File(Paths.get("./resources").toString()));
+//        fc.setInitialDirectory(new File(Paths.get("c:/").toString()));
         File dialogResult = fc.showOpenDialog(scene.getWindow());
         if (dialogResult != null) {
             p1StrategyFileString = dialogResult.toString();
@@ -83,7 +83,7 @@ public class VoronoiApplication extends Application {
 
     private void setPlayer2StrategyFile() {
         FileChooser fc = new FileChooser();
-        fc.setInitialDirectory(new File(Paths.get("./resources").toString()));
+//        fc.setInitialDirectory(new File(Paths.get("c:/").toString()));
         File dialogResult = fc.showOpenDialog(scene.getWindow());
         if (dialogResult != null) {
             p2StrategyFileString = dialogResult.toString();
