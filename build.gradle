@@ -22,13 +22,15 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.9
 targetCompatibility = 1.9
 
+mainClassName = 'com.geom.voronoi.gui.VoronoiApplication'
+
 repositories {
     mavenLocal()
     mavenCentral()
 }
 
 dependencies {	
-	compile group: 'org.kynosarges', name: 'tektosyne', version: '6.2.0'
-    compile group: 'com.esri.geometry', name: 'esri-geometry-api', version: '2.2.2'
+	implementation group: 'org.kynosarges', name: 'tektosyne', version: '6.2.0'
+    implementation group: 'com.esri.geometry', name: 'esri-geometry-api', version: '2.2.2'
 
 }
