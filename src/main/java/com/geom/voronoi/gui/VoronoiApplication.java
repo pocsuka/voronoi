@@ -23,8 +23,11 @@ public class VoronoiApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        p1StrategyFileString = "resources\\circle10.txt";
-        p2StrategyFileString = "resources\\p2circle10.txt";
+        p1StrategyFileString = "C:\\git\\voronoi\\src\\main\\resources\\circle10.txt";
+        p2StrategyFileString = "C:\\git\\voronoi\\src\\main\\resources\\p2circle10.txt";
+//
+//        p1StrategyFileString = "./resources/circle10.txt";
+//        p2StrategyFileString = "./resources/p2circle10.txt";
 
         final Label caption = new Label("2 player Voronoi game");
         caption.setFont(Global.boldFont(16));

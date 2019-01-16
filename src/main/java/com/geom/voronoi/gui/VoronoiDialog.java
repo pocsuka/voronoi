@@ -93,7 +93,7 @@ public class VoronoiDialog extends Stage {
 
 
     private void draw() {
-        final double diameter = 8;
+        double diameter = 8;
 
         List<Triangle> triangles;
 
@@ -136,13 +136,15 @@ public class VoronoiDialog extends Stage {
                     blueAreas.add(voronoiRegion.getArea());
                 }
 
+                List<PointD> voronoiVertices = voronoiRegion.getVertices();
 
-                Polygon polygon = new Polygon();
-                polygon.getPoints().addAll(toDoubleArray(voronoiRegion.getVertices()));
-                polygon.setFill(voronoiRegion.getColor());
-                polygon.setStroke(Color.BLACK);
-                _output.getChildren().add(polygon);
-
+                if (voronoiVertices != null) {
+                    Polygon polygon = new Polygon();
+                    polygon.getPoints().addAll(toDoubleArray(voronoiVertices));
+                    polygon.setFill(voronoiRegion.getColor());
+                    polygon.setStroke(Color.BLACK);
+                    _output.getChildren().add(polygon);
+                }
             }
 
 //            triangulation lines
@@ -192,6 +194,17 @@ public class VoronoiDialog extends Stage {
         blue = blue.concat("%");
 
         standing.setText(red + blue);
+
+        if(input.size() > 100) {
+            diameter = 4;
+        }
+
+        if(input.size() > 1000) {
+            diameter = 3;
+        }
+        if(input.size() > 10000) {
+            diameter = 2;
+        }
 
         for (Vertex point: input) {
             final Circle shape = new Circle(point.getLocation().x, point.getLocation().y, diameter / 2);

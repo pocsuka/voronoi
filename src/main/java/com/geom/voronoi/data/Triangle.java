@@ -25,7 +25,7 @@ public class Triangle {
 
         PointD[] points = getPointsAsArray();
 
-        return GeoUtils.pointInPolygon(point, points).equals(PolygonLocation.INSIDE);
+        return !GeoUtils.pointInPolygon(point, points).equals(PolygonLocation.OUTSIDE);
     }
 
     public boolean isVertex(PointD vertex) {
